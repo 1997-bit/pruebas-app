@@ -1,0 +1,22 @@
+@layer componentes {
+.avatar {
+  display: inline-grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--secundario);
+  color: var(--secundario-texto);
+  border: var(--fino) solid var(--borde);
+  font-size: 0.625rem;
+  font-weight: 600;
+}
+}
+
+@layer componentes {
+/* Grupo de avatares: encimados con anillo del fondo; el último dice cuántos más */
+.avatares { display: inline-flex; align-items: center; padding-left: 6px; }
+.avatares > .avatar { width: 2rem; height: 2rem; margin-left: -6px; font-size: 0.6875rem; box-shadow: 0 0 0 2px var(--fondo); }
+.avatares > .avatar-mas { background: var(--acento); color: var(--tenue-texto); }
+}

@@ -1,0 +1,142 @@
+@layer componentes {
+.campos {
+  display: grid;
+  gap: var(--esp-4);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+}
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-2);
+}
+.campo > label,
+.grupo > legend {
+  font-size: var(--letra-sm);
+  font-weight: 500;
+}
+.requerido { color: var(--error); }
+/* Ícono dentro del control: ojo de la contraseña */
+.control-con-boton { position: relative; }
+.control-con-boton > .control { padding-right: calc(var(--alto-sm) + var(--esp-2)); }
+.control-con-boton > .control-boton { position: absolute; top: 50%; right: 4px; translate: 0 -50%; color: var(--tenue-texto); }
+@media (hover: hover) {
+  .control-con-boton > .control-boton:hover { color: var(--texto); }
+}
+/* Ícono fijo a la izquierda: lupa del buscador */
+.control-con-icono { position: relative; }
+.control-con-icono > .icono { position: absolute; top: 50%; left: var(--esp-3); translate: 0 -50%; width: 16px; height: 16px; color: var(--tenue-texto); pointer-events: none; }
+.control-con-icono > .control { padding-left: calc(var(--esp-3) + 16px + var(--esp-2)); }
+.campo-ayuda {
+  margin: 0;
+  font-size: var(--letra-xs);
+  color: var(--tenue-texto);
+}
+.campo-error {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  font-size: var(--letra-xs);
+  font-weight: 500;
+  color: var(--error);
+}
+.campo-error .icono { width: 14px; height: 14px; }
+
+.control {
+  width: 100%;
+  min-height: var(--alto-md);
+  padding: 6px var(--esp-3); /* centra el texto del select en 2.25rem */
+  font: inherit;
+  font-size: var(--letra-sm);
+  background: var(--fondo);
+  color: var(--texto);
+  border: 1px solid var(--entrada);
+  border-radius: var(--radio-md);
+  box-shadow: var(--sombra-xs);
+}
+.control::placeholder { color: var(--tenue-texto); }
+/* Foco: borde del color del anillo y halo pegado. Outline transparente: visible en forced-colors */
+.control:focus-visible { outline: 2px solid transparent; border-color: var(--anillo); box-shadow: 0 0 0 3px color-mix(in oklch, var(--anillo), transparent 60%); }
+.control:is([aria-invalid="true"], :user-invalid) { border-color: var(--error); }
+.control:is([aria-invalid="true"], :user-invalid):focus-visible { box-shadow: 0 0 0 3px color-mix(in oklch, var(--error), transparent 60%); }
+.control:disabled { opacity: 0.6; cursor: not-allowed; background: var(--tenue); }
+textarea.control { min-height: 5rem; padding-block: var(--esp-2); }
+
+.control[type="file"] { padding: var(--esp-1); cursor: pointer; }
+.control[type="file"]::file-selector-button {
+  margin-right: var(--esp-3);
+  padding: var(--esp-1) var(--esp-3);
+  font: inherit;
+  font-weight: 500;
+  color: var(--secundario-texto);
+  background: var(--secundario);
+  border: var(--fino) solid var(--borde);
+  border-radius: var(--radio-sm);
+  cursor: pointer;
+}
+
+/* Buscador: ✕ para limpiar, como iOS. Firefox no lo trae */
+.control[type="search"]::-webkit-search-cancel-button {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  margin-left: var(--esp-2);
+  background: var(--tenue-texto);
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='m15 9-6 6'/%3E%3Cpath d='m9 9 6 6'/%3E%3C/svg%3E") center / contain no-repeat;
+  cursor: pointer;
+}
+
+@media (pointer: coarse) {
+  .control { min-height: var(--alto-tactil); }
+  /* Menos de 16px: Safari de iPhone acerca la página al tocar el campo. Gana también a .codigo (13px) */
+  :is(.control, .control.codigo) { font-size: max(16px, 1rem); }
+}
+}
+
+@layer componentes {
+/* Flecha del color del texto */
+.select { position: relative; }
+.select .control { appearance: none; padding-right: var(--esp-10); cursor: pointer; }
+.select::after {
+  content: "";
+  position: absolute;
+  right: var(--esp-3);
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  translate: 0 -50%;
+  background: var(--tenue-texto);
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center / contain no-repeat;
+  pointer-events: none;
+}
+
+/* Select con tokens: lista flotante. Sin soporte: el del sistema */
+@supports (appearance: base-select) {
+  .select .control, .select .control::picker(select) { appearance: base-select; }
+  .select .control::picker-icon { display: none; }
+  .select .control::picker(select) {
+    margin-top: var(--esp-1);
+    padding: var(--esp-1);
+    background: var(--material-flotante);
+    -webkit-backdrop-filter: var(--material-filtro);
+    backdrop-filter: var(--material-filtro);
+    color: var(--flotante-texto);
+    border: var(--fino) solid var(--borde);
+    border-radius: var(--radio-xl);
+    --radio-adentro: max(0px, var(--radio-xl) - var(--esp-1) - var(--fino));
+    box-shadow: var(--sombra-md);
+    /* Aparece al instante; al cerrar, un fundido corto */
+    opacity: 0;
+    transition: opacity var(--dur-corta) var(--curva-salir), overlay var(--dur-corta) allow-discrete, display var(--dur-corta) allow-discrete;
+  }
+  .select .control::picker(select):popover-open { opacity: 1; transition: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .select .control::picker(select) { transition: none; }
+  }
+  /* Concéntrico: radio del menú menos relleno y borde */
+  .select option { padding: var(--esp-2); border-radius: var(--radio-adentro); font-size: var(--letra-sm); }
+  .select option:is(:hover, :focus-visible) { background: var(--acento); color: var(--acento-texto); outline: none; }
+  .select option:checked { font-weight: 500; }
+}
+
+}

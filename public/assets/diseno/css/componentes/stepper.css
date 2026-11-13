@@ -1,0 +1,31 @@
+@layer componentes {
+/* Stepper de iOS: − y + junto a un número. interfaz.js los agrega a <div class="stepper"><input type="number">
+   Sin JS: el campo solo. Mantener presionado repite */
+.stepper { display: inline-flex; align-items: center; gap: var(--esp-2); }
+.stepper > .control { width: 6rem; text-align: center; font-variant-numeric: tabular-nums; }
+.stepper:has(.stepper-botones) > .control { -moz-appearance: textfield; }
+.stepper:has(.stepper-botones) > .control::-webkit-inner-spin-button,
+.stepper:has(.stepper-botones) > .control::-webkit-outer-spin-button { appearance: none; margin: 0; }
+.stepper-botones { --radio-adentro: max(0px, var(--radio-lg) - 2px - var(--fino)); display: inline-flex; align-items: center; padding: 2px; background: var(--tenue); border: var(--fino) solid var(--borde); border-radius: var(--radio-lg); }
+.stepper-botones button {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: calc(var(--alto-md) - 6px);
+  padding: 0;
+  color: var(--texto);
+  background: none;
+  border: 0;
+  border-radius: var(--radio-adentro);
+  cursor: pointer;
+}
+.stepper-botones button + button { border-left: var(--fino) solid var(--borde); border-radius: 0 var(--radio-adentro) var(--radio-adentro) 0; }
+.stepper-botones button:first-child { border-radius: var(--radio-adentro) 0 0 var(--radio-adentro); }
+.stepper-botones button:disabled { color: var(--tenue-texto); opacity: 0.5; cursor: not-allowed; }
+@media (hover: hover) {
+  .stepper-botones button:not(:disabled):hover { background: var(--acento); }
+}
+@media (pointer: coarse) {
+  .stepper-botones button { width: var(--alto-tactil); height: calc(var(--alto-tactil) - 6px); }
+}
+}

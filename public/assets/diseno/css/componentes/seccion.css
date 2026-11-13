@@ -1,0 +1,30 @@
+@layer componentes {
+.titulo-seccion { margin: 0 0 var(--esp-3); font-size: var(--letra-lg); font-weight: 600; letter-spacing: var(--tracking-lg); line-height: 1.3; }
+/* En .pila: el título va con lo de abajo */
+.pila > .titulo-seccion { margin: var(--esp-4) 0 calc(-1 * var(--esp-1)); }
+.separador { margin: var(--esp-1) 0; border: 0; border-top: var(--fino) solid var(--borde); }
+/* <fieldset class="seccion"> con <legend class="titulo-seccion"> */
+.seccion { min-inline-size: 0; margin: 0; padding: 0; border: 0; }
+.seccion > legend { padding: 0; }
+}
+
+@layer componentes {
+/* <details class="plegable">, .flecha al final del summary */
+.plegable > summary { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--esp-1) var(--esp-3); cursor: pointer; list-style: none; }
+.plegable > summary .titulo-seccion { margin: 0; }
+.plegable[open] > summary { margin-bottom: var(--esp-4); }
+.plegable[open] > summary .flecha { rotate: 90deg; }
+/* Abre y cierra con la altura (interpolate-size en tokens.css). Sin soporte, salta como siempre
+   clip con margen: el anillo de foco de los campos de adentro no se corta */
+.plegable::details-content {
+  block-size: 0;
+  overflow: clip;
+  overflow-clip-margin: var(--esp-1);
+  transition: block-size var(--dur-media) var(--curva-entrar), content-visibility var(--dur-media) allow-discrete;
+}
+.plegable[open]::details-content { block-size: auto; }
+@media (prefers-reduced-motion: reduce) {
+  .plegable::details-content { transition: none; }
+}
+[data-movimiento="si"] .plegable::details-content { transition: none; }
+}

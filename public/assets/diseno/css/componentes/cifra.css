@@ -1,0 +1,63 @@
+@layer componentes {
+.cifras {
+  display: grid;
+  gap: var(--esp-4);
+  /* 5 cifras, la principal ocupa 2: 6 columnas, una fila. auto-fill dejaba filas cojas con zoom */
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+.cifra { display: flex; flex-direction: column; gap: var(--esp-1); }
+.cifra-etiqueta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-2);
+  margin: 0;
+  font-size: var(--letra-sm);
+  font-weight: 500;
+  color: var(--tenue-texto);
+}
+.cifra-valor {
+  margin: 0;
+  font-size: var(--letra-2xl);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: var(--tracking-titulo);
+}
+.cifra-nota { margin: 0; font-size: var(--letra-xs); color: var(--tenue-texto); }
+/* Cifra principal: más grande y en dos columnas si cabe */
+.cifra-principal .cifra-valor { font-size: var(--letra-3xl); }
+/* Container queries: ancho del contenido, no de la ventana. Sin filas de 3 + 1 ni 3 + 2
+   Ancho: una fila. Medio: la principal sola y el resto de 2 en 2. Angosto: una por fila */
+.cifra-principal { grid-column: span 2; }
+@container principal (width < 60rem) {
+  .cifras { grid-template-columns: repeat(2, 1fr); }
+  .cifra-principal { grid-column: 1 / -1; }
+}
+@container principal (width < 28rem) { .cifras { grid-template-columns: 1fr; } }
+.cifra-hoy { color: var(--texto); font-weight: 500; }
+/* Ícono con el color del estado */
+.cifra-exito .cifra-etiqueta svg { color: var(--exito-fuerte); }
+.cifra-peligro .cifra-etiqueta svg { color: var(--peligro-fuerte); }
+.cifra-aviso .cifra-etiqueta svg { color: var(--aviso-fuerte); }
+
+}
+
+@layer componentes {
+/* Variación de una cifra: flecha y signo, color según si subir es bueno. Nunca solo color
+   <span class="delta" data-direccion="sube|baja|igual" data-sentido="bueno|malo">+12 % <span class="solo-lector">vs. mes anterior</span></span> */
+.delta { display: inline-flex; align-items: center; gap: 2px; font-size: var(--letra-xs); font-weight: 500; color: var(--tenue-texto); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.delta::before { content: ""; width: 12px; height: 12px; background: currentColor; mask: var(--flecha) center / contain no-repeat; }
+.delta[data-direccion="sube"] { --flecha: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12 7-7 7 7'/%3E%3Cpath d='M12 19V5'/%3E%3C/svg%3E"); }
+.delta[data-direccion="baja"] { --flecha: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 5v14'/%3E%3Cpath d='m19 12-7 7-7-7'/%3E%3C/svg%3E"); }
+.delta[data-direccion="igual"] { --flecha: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='M5 12h14'/%3E%3C/svg%3E"); }
+.delta[data-sentido="bueno"] { color: var(--exito-fuerte); }
+.delta[data-sentido="malo"] { color: var(--peligro-fuerte); }
+
+/* Sparkline: tendencia en gris, el último punto en color. Va con la cifra, que dice el número */
+.sparkline { position: relative; display: block; width: 100%; height: 2rem; }
+.sparkline svg { width: 100%; height: 100%; overflow: visible; }
+.sparkline polyline { fill: none; stroke: var(--grafico-eje); stroke-width: 1.5px; vector-effect: non-scaling-stroke; stroke-linejoin: round; stroke-linecap: round; }
+.sparkline-punto { position: absolute; right: 0; width: 6px; height: 6px; translate: 50% 50%; border-radius: 50%; background: var(--serie-1); box-shadow: 0 0 0 2px var(--grafico-superficie); }
+.cifra .sparkline { margin-top: var(--esp-2); }
+.cifra-fila { display: flex; align-items: baseline; flex-wrap: wrap; gap: var(--esp-2); }
+}

@@ -1,0 +1,11 @@
+@layer componentes {
+/* Banner: aviso de todo el sistema arriba de la página. Con data-banner="id", ✕ lo esconde para siempre (localStorage)
+   <div class="banner" role="region" aria-label="Aviso" data-banner="mantenimiento-oct"> */
+.banner { display: flex; align-items: center; gap: var(--esp-3); padding: var(--esp-2) var(--esp-4); font-size: var(--letra-sm); background: var(--info-suave); color: var(--texto); border-bottom: var(--fino) solid var(--borde); }
+.banner > .icono { color: var(--info-fuerte); }
+.banner > p { flex: 1; margin: 0; }
+.banner-aviso { background: var(--aviso-suave); }
+.banner-aviso > .icono { color: var(--aviso-fuerte); }
+.banner-peligro { background: var(--peligro-suave); }
+.banner-peligro > .icono { color: var(--peligro-fuerte); }
+}

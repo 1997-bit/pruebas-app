@@ -1,0 +1,79 @@
+/* Componentes. Requiere tokens.css y base.css. Un archivo por componente en componentes/, con el nombre de su clase.
+   Cada archivo se envuelve en su capa (@layer componentes o app): el orden lo fijan las capas, no esta lista.
+   Dentro de una capa, sí: impresion.css va al final de los componentes para ganarles */
+
+/* Acciones y etiquetas */
+@import url("componentes/boton.css");
+@import url("componentes/tooltip.css");
+@import url("componentes/insignia.css");
+@import url("componentes/codigo.css");
+@import url("componentes/chip.css");
+@import url("componentes/avatar.css");
+@import url("componentes/tema.css");
+
+/* Estructura de la página */
+@import url("componentes/seccion.css");
+@import url("componentes/encabezado.css");
+@import url("componentes/tarjeta.css");
+@import url("componentes/detalle.css");
+
+/* Formularios */
+@import url("componentes/campo.css");
+@import url("componentes/opciones.css");
+@import url("componentes/resultado.css");
+@import url("componentes/stepper.css");
+@import url("componentes/deslizador.css");
+@import url("componentes/switch.css");
+@import url("componentes/ajuste.css");
+@import url("componentes/archivo.css");
+@import url("componentes/filtros.css");
+
+/* Datos y navegación */
+@import url("componentes/tabla.css");
+@import url("componentes/seleccion.css");
+@import url("componentes/paginacion.css");
+@import url("componentes/pestanas.css");
+@import url("componentes/lista-agrupada.css");
+@import url("componentes/arbol.css");
+
+/* Menús y capas encima */
+@import url("componentes/menu.css");
+@import url("componentes/velo.css");
+@import url("componentes/dialogo.css");
+@import url("componentes/panel-lateral.css");
+@import url("componentes/atajos.css");
+@import url("componentes/paleta.css");
+
+/* Avisos */
+@import url("componentes/alerta.css");
+@import url("componentes/aviso-flotante.css");
+@import url("componentes/banner.css");
+@import url("componentes/vacio.css");
+
+/* Cifras, progreso e historial */
+@import url("componentes/cifra.css");
+@import url("componentes/progreso.css");
+@import url("componentes/barra-apilada.css");
+@import url("componentes/pasos.css");
+@import url("componentes/linea-tiempo.css");
+@import url("componentes/historial.css");
+@import url("componentes/registro.css");
+
+/* Contenido. codigo.css va arriba, con las etiquetas: .control y .campo-ayuda le ganan */
+@import url("componentes/imagen.css");
+@import url("componentes/articulo.css");
+
+/* Gráficos */
+@import url("componentes/grafico.css");
+@import url("componentes/leyenda.css");
+@import url("componentes/grafico-cierre.css");
+@import url("componentes/matriz.css");
+
+/* Vistas armadas */
+@import url("componentes/acceso.css");
+@import url("componentes/panel.css");
+@import url("componentes/tablero.css");
+@import url("componentes/cronograma.css");
+
+/* Papel: al final, gana a los de arriba */
+@import url("componentes/impresion.css");

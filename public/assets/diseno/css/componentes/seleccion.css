@@ -1,0 +1,38 @@
+@layer componentes {
+/* Selección en tablas, como Finder: casillas y una barra con la cantidad y lo que se puede hacer
+   <table data-seleccion> con input[type=checkbox][data-seleccionar] por fila y [data-seleccionar-todo] en el thead
+   <div class="barra-seleccion" data-barra-de="id-tabla" hidden> interfaz.js la muestra y cuenta */
+.barra-seleccion {
+  position: sticky;
+  bottom: calc(var(--esp-4) + env(safe-area-inset-bottom, 0px));
+  z-index: 15;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--esp-2);
+  width: fit-content;
+  max-width: 100%;
+  margin: var(--esp-3) auto 0;
+  padding: var(--esp-2) var(--esp-2) var(--esp-2) var(--esp-4);
+  background: var(--material-flotante);
+  -webkit-backdrop-filter: var(--material-filtro);
+  backdrop-filter: var(--material-filtro);
+  border: var(--fino) solid var(--borde);
+  border-radius: var(--radio-total);
+  box-shadow: var(--sombra-lg);
+  font-size: var(--letra-sm);
+  /* Entra con resorte y sale rápido; interrumpible si se marca y desmarca seguido */
+  transition: opacity var(--dur-corta) var(--curva-salir), translate var(--dur-corta) var(--curva-salir), display var(--dur-corta) allow-discrete;
+}
+.barra-seleccion:not([hidden]) { transition: opacity var(--dur-corta) var(--curva), translate var(--dur-resorte) var(--resorte); }
+.barra-seleccion[hidden] { opacity: 0; translate: 0 12px; }
+@starting-style {
+  .barra-seleccion:not([hidden]) { opacity: 0; translate: 0 12px; }
+}
+.barra-seleccion-cuenta { margin-right: var(--esp-2); font-weight: 600; font-variant-numeric: tabular-nums; }
+.tabla tbody tr:has([data-seleccionar]:checked) { background: color-mix(in oklab, var(--primario) 8%, var(--fondo)); }
+.tabla .celda-casilla { width: 1%; }
+@media (prefers-reduced-motion: reduce) {
+  .barra-seleccion { transition: none; }
+}
+}

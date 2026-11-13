@@ -1,0 +1,68 @@
+@layer componentes {
+.archivos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: var(--fondo);
+  border: var(--fino) solid var(--borde);
+  border-radius: var(--radio-lg);
+}
+.archivo {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0 var(--esp-3);
+  padding: var(--esp-3);
+  border-bottom: var(--fino) solid var(--borde);
+}
+.archivo:last-child { border-bottom: 0; }
+/* Separador con sangría, como las listas de iOS: empieza en el texto, no en el ícono */
+.archivo:not(:last-child) {
+  border-bottom: 0;
+  background: linear-gradient(var(--borde) 0 0) right bottom / calc(100% - 2 * var(--esp-3) - 2.5rem) var(--fino) no-repeat;
+}
+.archivo-icono {
+  grid-row: 1 / span 2;
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  overflow: hidden;
+  border-radius: var(--radio-md);
+  background: var(--secundario);
+  color: var(--tenue-texto);
+}
+.archivo-icono img { width: 100%; height: 100%; object-fit: cover; }
+.archivo-nombre { grid-column: 2; margin: 0; min-width: 0; font-size: var(--letra-sm); font-weight: 500; overflow-wrap: anywhere; }
+.archivo-detalle { grid-column: 2; margin: 0; min-width: 0; font-size: var(--letra-xs); color: var(--tenue-texto); }
+/* La URL se parte. Los códigos no, #39 */
+.archivo-detalle span.codigo { white-space: normal; overflow-wrap: anywhere; }
+.archivo > .acciones { grid-column: 3; grid-row: 1 / span 2; flex-wrap: nowrap; gap: var(--esp-1); }
+
+}
+
+@layer componentes {
+/* Zona para soltar archivos: un label grande con el input adentro. Arrastrar encima la marca. Sin JS: el input normal
+   <label class="zona-archivos"><input type="file" multiple> … <ul class="zona-archivos-lista"></ul></label> */
+.zona-archivos {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--esp-1);
+  padding: var(--esp-6) var(--esp-4);
+  text-align: center;
+  font-size: var(--letra-sm);
+  color: var(--tenue-texto);
+  border: 1.5px dashed var(--entrada);
+  border-radius: var(--radio-xl);
+  cursor: pointer;
+}
+.zona-archivos strong { color: var(--texto); font-weight: 500; }
+.zona-archivos > .icono { width: 28px; height: 28px; margin-bottom: var(--esp-1); stroke-width: 1.5; }
+.zona-archivos input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.zona-archivos:has(input:focus-visible) { outline: 3px solid color-mix(in oklch, var(--anillo) 75%, transparent); outline-offset: 1px; }
+.zona-archivos[data-encima] { border-color: var(--primario); background: color-mix(in oklch, var(--primario) 6%, transparent); }
+.zona-archivos-lista { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--esp-1); margin: var(--esp-2) 0 0; padding: 0; list-style: none; }
+.zona-archivos-lista:empty { display: none; }
+}

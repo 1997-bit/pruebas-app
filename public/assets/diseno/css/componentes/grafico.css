@@ -1,0 +1,198 @@
+@layer componentes {
+/* Gráfico: una tabla que js/graficos.js dibuja. Sin JS se ve la tabla. Ver el comentario de graficos.js
+   <figure class="grafico" data-tipo="columnas|barras|linea|parte|calor|dispersion"><figcaption><strong>Título</strong> nota</figcaption><table>…</table></figure>
+   Marcas finas: barras de hasta 24px, punta de 4px, líneas de 2px, puntos de 8px con anillo
+   Entre marcas que se tocan, 2px del fondo. Rejilla y ejes: líneas finas sólidas. El texto nunca lleva el color de la serie */
+figure.grafico { margin: 0; display: flex; flex-direction: column; gap: var(--esp-3); min-width: 0; }
+figure.grafico > figcaption { display: flex; flex-direction: column; gap: 2px; font-size: var(--letra-sm); color: var(--tenue-texto); }
+figure.grafico > figcaption strong { font-size: var(--letra-base); font-weight: 600; color: var(--texto); letter-spacing: var(--tracking-base); }
+/* Con JS, antes de dibujarse: sin la tabla y con el lugar del gráfico guardado. No aparece la tabla y luego el dibujo encima */
+:root[data-js] figure.grafico[data-tipo]:not([data-listo]) { min-height: 18rem; }
+:root[data-js] figure.grafico[data-tipo]:not([data-listo]) > table { display: none; }
+/* Recargando: se queda lo anterior, atenuado. Sin esqueleto ni salto */
+figure.grafico[aria-busy="true"] .grafico-lienzo { opacity: 0.5; transition: opacity var(--dur-corta) var(--curva); }
+
+.grafico-lienzo { --canal: 4ch; display: flex; flex-direction: column; gap: var(--esp-2); padding-left: var(--canal); font-size: var(--letra-xs); color: var(--tenue-texto); font-variant-numeric: tabular-nums; }
+.grafico-plano { position: relative; height: 12rem; border-radius: var(--radio-sm); }
+.grafico-plano:focus-visible { outline-offset: 6px; }
+.grafico-vacio { display: grid; place-items: center; height: 8rem; margin-left: calc(-1 * var(--canal)); font-size: var(--letra-sm); border: 1px dashed var(--grafico-eje); border-radius: var(--radio-lg); }
+
+/* Rejilla: hairline sólida; la base, un tono más fuerte */
+.grafico-rejilla { position: absolute; inset: 0; pointer-events: none; }
+.grafico-linea-rejilla { position: absolute; left: 0; right: 0; border-top: 1px solid var(--grafico-rejilla); }
+.grafico-linea-rejilla-v { position: absolute; top: 0; bottom: 0; border-left: 1px solid var(--grafico-rejilla); }
+.grafico-base { border-color: var(--grafico-eje); }
+.grafico-marca-y { position: absolute; right: calc(100% + var(--esp-2)); top: 0; translate: 0 -50%; white-space: nowrap; }
+.grafico-marca-x { position: absolute; top: calc(100% + var(--esp-1)); left: 0; translate: -50% 0; white-space: nowrap; }
+
+/* Columnas: grupos iguales; dentro, una ranura por serie o una pila */
+.grafico-marcas { position: absolute; inset: 0; display: flex; }
+/* Barra de hasta 24px y nunca más del 70 % de su banda: el resto es aire. --k: barras por grupo */
+.grafico-grupo { flex: 1; min-width: 0; container-type: inline-size; display: flex; justify-content: center; gap: 2px; }
+.grafico-ranura { position: relative; flex: 0 0 min(24px, calc((70cqi - (var(--k, 1) - 1) * 2px) / var(--k, 1))); height: 100%; }
+/* Pila: 2px del fondo bajo cada parte, menos la de la base. Solo el extremo se redondea */
+.grafico-barra { position: absolute; left: 0; right: 0; min-height: 1px; background: var(--c) padding-box; border-bottom: 2px solid transparent; }
+.grafico-barra:first-child { border-bottom-width: 0; }
+.grafico-barra.grafico-punta { border-radius: 4px 4px 0 0; }
+.grafico-negativa { border-bottom-width: 0; border-top: 2px solid transparent; }
+.grafico-negativa.grafico-punta { border-radius: 0 0 4px 4px; }
+/* Al pasar: el resto se apaga un poco, la elegida queda */
+.grafico-plano:has(.grafico-activo) :is(.grafico-grupo, .grafico-grupo-h, .grafico-segmento):not(.grafico-activo) { opacity: 0.55; }
+.grafico-rotulo { position: absolute; bottom: calc(100% + 4px); left: 50%; translate: -50% 0; color: var(--texto); font-weight: 500; white-space: nowrap; }
+.grafico-rotulo-der { left: auto; right: 0; translate: none; }
+.grafico-rotulo-izq { left: 0; translate: none; }
+
+.grafico-x { display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); }
+/* Las ocultas dejan lugar: la visible puede pasarse de su banda */
+.grafico-x > span { text-align: center; white-space: nowrap; }
+.grafico-x-puntos { position: relative; display: block; height: 1.25em; }
+.grafico-x-puntos > span { position: absolute; translate: -50% 0; overflow: visible; }
+.grafico-x-puntos > span:first-child { translate: 0 0; }
+.grafico-x-puntos > span:last-child { translate: -100% 0; }
+
+/* Barras horizontales: nombre a la izquierda, valor en la punta */
+.grafico-plano-h { height: auto; padding-bottom: 1.5em; }
+.grafico-plano-h .grafico-rejilla { left: var(--nombres, 30%); bottom: 1.5em; right: 5ch; }
+.grafico-marcas-h { position: relative; display: flex; flex-direction: column; gap: var(--esp-2); }
+.grafico-grupo-h { display: grid; grid-template-columns: var(--nombres, 30%) 1fr; align-items: center; margin-left: calc(-1 * var(--canal)); padding-right: 5ch; }
+.grafico-categoria { padding-right: var(--esp-3); overflow: hidden; color: var(--texto); font-size: var(--letra-sm); text-overflow: ellipsis; white-space: nowrap; }
+.grafico-pista { display: flex; flex-direction: column; gap: 2px; }
+.grafico-ranura-h { position: relative; height: 16px; }
+.grafico-barra-h { position: absolute; top: 0; bottom: 0; min-width: 1px; background: var(--c) padding-box; border-left: 2px solid transparent; }
+.grafico-barra-h:first-child { border-left-width: 0; }
+.grafico-barra-h.grafico-punta { border-radius: 0 4px 4px 0; }
+.grafico-barra-h.grafico-negativa { border-left-width: 0; border-radius: 4px 0 0 4px; }
+.grafico-rotulo-h { position: absolute; top: 50%; translate: 0 -50%; padding-left: var(--esp-2); color: var(--texto); font-weight: 500; white-space: nowrap; }
+.grafico-plano-h .grafico-marca-x { top: auto; bottom: -1.5em; }
+.grafico-lienzo:has(.grafico-plano-h) { padding-left: 0; }
+.grafico-lienzo:has(.grafico-plano-h) .grafico-grupo-h { margin-left: 0; }
+
+/* Línea: 2px, se escala sin engrosar. Área: el color al 10 % */
+.grafico-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.grafico-trazo { fill: none; stroke: var(--c); stroke-width: 2px; vector-effect: non-scaling-stroke; stroke-linejoin: round; stroke-linecap: round; }
+.grafico-relleno { fill: var(--c); fill-opacity: 0.1; stroke: none; }
+.grafico-puntos { position: absolute; inset: 0; pointer-events: none; }
+.grafico-punto { position: absolute; width: 8px; height: 8px; translate: -50% 50%; border-radius: 50%; background: var(--c); box-shadow: 0 0 0 2px var(--grafico-superficie); }
+.grafico-rotulo-fin { position: absolute; left: calc(100% + var(--esp-2)); top: 50%; translate: 0 -50%; color: var(--texto); font-weight: 500; white-space: nowrap; }
+.grafico-lienzo:has(.grafico-rotulo-fin) { padding-right: 6ch; }
+/* Evento en una línea: raya vertical con un cuadrito arriba. <tr data-marca="peligro|exito|aviso"> */
+.grafico-marca { --c: var(--peligro); position: absolute; top: 0; bottom: 0; border-left: 1px solid var(--c); pointer-events: none; }
+.grafico-marca::before { content: ""; position: absolute; top: 0; left: -3.5px; width: 6px; height: 6px; border-radius: 1px; background: var(--c); }
+.grafico-marca-exito { --c: var(--exito); }
+.grafico-marca-aviso { --c: var(--aviso); }
+.grafico-cruz { position: absolute; top: 0; bottom: 0; border-left: 1px solid var(--grafico-eje); pointer-events: none; }
+.grafico-cruz .grafico-punto { left: 0; translate: -50% 50%; }
+
+/* Dispersión: el punto se ve de 8px, se apunta en un círculo de 24px (el más cercano gana) */
+.grafico-punto-suelto { pointer-events: auto; }
+.grafico-punto-suelto::before { content: ""; position: absolute; inset: -8px; border-radius: 50%; }
+.grafico-punto-suelto.grafico-activo { scale: 1.5; }
+.grafico-ejes { margin: 0; text-align: right; }
+/* Números del eje X debajo del área */
+.grafico-plano:has(> .grafico-rejilla > .grafico-linea-rejilla-v):not(.grafico-plano-h) { margin-bottom: 1.5em; }
+
+/* Parte de un todo: una barra con 2px entre partes y la lista con valor y porcentaje */
+.grafico-plano-parte { height: auto; }
+.grafico-lienzo:has(.grafico-plano-parte) { padding-left: 0; }
+.grafico-partes { display: flex; gap: 2px; height: 16px; }
+.grafico-segmento { min-width: 2px; background: var(--c); }
+.grafico-segmento:first-child { border-radius: 4px 0 0 4px; }
+.grafico-segmento:last-child { border-radius: 0 4px 4px 0; }
+.grafico-segmento:only-child { border-radius: 4px; }
+.grafico-partes-lista { display: grid; grid-template-columns: auto 1fr auto auto; gap: var(--esp-2) var(--esp-3); align-items: center; margin: 0; padding: 0; list-style: none; font-size: var(--letra-sm); }
+.grafico-partes-lista li { display: contents; }
+.grafico-partes-nombre { color: var(--texto); }
+.grafico-partes-lista strong { font-weight: 500; text-align: right; font-variant-numeric: tabular-nums; }
+.grafico-partes-pct { min-width: 4.5ch; color: var(--tenue-texto); text-align: right; font-variant-numeric: tabular-nums; }
+
+/* Mapa de calor: un tono, más fuerte con más valor. El cero se funde con el fondo */
+.grafico-plano-calor { height: auto; overflow-x: auto; }
+.grafico-lienzo:has(.grafico-plano-calor) { padding-left: 0; }
+.grafico-calor { display: grid; grid-template-columns: max-content repeat(var(--columnas), minmax(2.25rem, 1fr)); gap: 2px; }
+.grafico-calor-col { padding-bottom: var(--esp-1); text-align: center; white-space: nowrap; }
+.grafico-celda { display: grid; place-items: center; min-height: 2rem; border-radius: var(--radio-sm); background: color-mix(in oklab, var(--c) var(--t, 0%), var(--grafico-superficie));   /* oklab: el blanco no tiene tono y oklch lo desvía */ color: var(--texto); font-variant-numeric: tabular-nums; }
+.grafico-celda-divergente { background: color-mix(in oklab, var(--c) var(--t, 0%), var(--divergente-medio)); }
+.grafico-celda-oscura { color: oklch(100% 0 0); }
+.grafico-celda-vacia { background: none; box-shadow: inset 0 0 0 1px var(--grafico-rejilla); }
+.grafico-celda.grafico-activo { box-shadow: 0 0 0 2px var(--texto); }
+.grafico-escala { display: flex; align-items: center; gap: var(--esp-2); font-size: var(--letra-xs); color: var(--tenue-texto); }
+.grafico-escala-barra { width: 8rem; height: 8px; border-radius: var(--radio-total); background: linear-gradient(in oklab to right, var(--grafico-superficie), var(--serie-1)); box-shadow: inset 0 0 0 1px var(--grafico-rejilla); }
+.grafico-escala-divergente .grafico-escala-barra { background: linear-gradient(in oklab to right, var(--serie-8), var(--divergente-medio), var(--serie-1)); }
+
+/* Meta o umbral: la única línea punteada, porque marca un límite */
+.grafico-referencia { position: absolute; left: 0; right: 0; border-top: 1px dashed var(--texto); pointer-events: none; }
+/* Rótulo a la izquierda: a la derecha suele estar el máximo */
+.grafico-referencia > span { position: absolute; left: 0; bottom: 2px; padding: 0 var(--esp-1); background: var(--grafico-superficie); color: var(--texto); font-weight: 500; }
+.grafico-referencia-v { top: 0; bottom: 1.5em; left: auto; right: auto; border-top: 0; border-left: 1px dashed var(--texto); }
+.grafico-referencia-v > span { left: 4px; bottom: auto; top: -1.5em; }
+
+/* Estadística: crudo fino en gris, calculado en acento, banda al 10 % con bordes punteados (marcan un límite) */
+.grafico-trazo-contexto { --c: var(--grafico-contexto); stroke-width: 1.25px; }
+.grafico-trazo-acento { --c: var(--grafico-acento); }
+.grafico-banda { fill: var(--grafico-acento); fill-opacity: 0.1; stroke: none; }
+.grafico-banda-borde { fill: none; stroke: var(--grafico-acento); stroke-opacity: 0.5; stroke-width: 1px; stroke-dasharray: 3 3; vector-effect: non-scaling-stroke; }
+.grafico-punto-acento { --c: var(--grafico-acento); }
+.grafico-punto-contexto { --c: var(--grafico-contexto); width: 6px; height: 6px; box-shadow: none; }
+.grafico-clave-banda { width: 12px; height: 10px; border-radius: 2px; background: color-mix(in oklab, var(--c) 15%, transparent); outline: 1px dashed color-mix(in oklab, var(--c) 60%, transparent); outline-offset: -1px; }
+.grafico-leyenda-fija li { display: inline-flex; align-items: center; gap: var(--esp-2); min-height: var(--alto-xs); font-size: var(--letra-sm); color: var(--texto); }
+.grafico-resumen { margin: 0; font-size: var(--letra-sm); color: var(--tenue-texto); font-variant-numeric: tabular-nums; }
+
+/* Dispersión con capas: en pixeles, sin deformar flechas */
+.grafico-svg-px { pointer-events: none; }
+.grafico-cuadrante { fill: var(--grafico-acento); fill-opacity: 0.07; }
+.grafico-eje-cero { stroke: var(--grafico-eje); stroke-width: 1px; }
+.grafico-ajuste { stroke: var(--grafico-acento); stroke-width: 2px; stroke-linecap: round; }
+.grafico-ajuste-previo { stroke: var(--grafico-contexto); stroke-width: 1px; }
+.grafico-flecha { stroke: var(--texto); stroke-width: 2px; stroke-linecap: round; }
+.grafico-flecha-punta { fill: none; stroke: var(--texto); stroke-width: 1.5px; stroke-linecap: round; stroke-linejoin: round; }
+.grafico-flecha-acento { stroke: var(--grafico-acento); }
+
+/* Rangos: un tramo por serie en la misma fila, 2px entre tramos que se tocan */
+.grafico-ranura-rango { height: 18px; }
+.grafico-tramo { position: absolute; top: 0; bottom: 0; min-width: 2px; background: var(--c) padding-box; border-inline: 1px solid transparent; border-radius: 4px; }
+.grafico-lienzo-rangos .grafico-grupo-h { padding-right: var(--esp-4); }
+.grafico-lienzo-rangos .grafico-plano-h .grafico-rejilla { right: var(--esp-4); }
+
+/* Leyenda: forma igual a la marca. Clic muestra u oculta la serie; el color no cambia */
+.grafico-leyenda { display: flex; flex-wrap: wrap; gap: var(--esp-1) var(--esp-3); margin: 0; padding: 0; list-style: none; }
+.grafico-leyenda button { display: inline-flex; align-items: center; gap: var(--esp-2); min-height: var(--alto-xs); padding: 0 var(--esp-1); font: inherit; font-size: var(--letra-sm); color: var(--texto); background: none; border: 0; border-radius: var(--radio-sm); cursor: pointer; }
+.grafico-leyenda button:disabled { cursor: default; }
+.grafico-leyenda [aria-pressed="false"] { color: var(--tenue-texto); text-decoration: line-through; }
+.grafico-leyenda [aria-pressed="false"] .grafico-clave { opacity: 0.3; }
+@media (hover: hover) {
+  .grafico-leyenda button:not(:disabled):hover { background: var(--acento); }
+}
+.grafico-clave { flex-shrink: 0; display: inline-block; background: var(--c); }
+/* Peso de las formas: un círculo se ve más chico que un cuadrado de la misma caja. Se agranda para que pesen igual */
+.grafico-clave-caja { width: 10px; height: 10px; border-radius: 2px; }
+.grafico-clave-linea { width: 12px; height: 2px; border-radius: 1px; }
+.grafico-clave-punto { width: 11px; height: 11px; border-radius: 50%; }
+
+/* Globo: el valor fuerte, el nombre tenue. Raya de color, no caja */
+.grafico-globo { position: absolute; z-index: 5; min-width: 7rem; max-width: 16rem; padding: var(--esp-2) var(--esp-3); background: var(--material-flotante); -webkit-backdrop-filter: var(--material-filtro); backdrop-filter: var(--material-filtro); border: var(--fino) solid var(--borde); border-radius: var(--radio-md); box-shadow: var(--sombra-md); color: var(--tenue-texto); font-size: var(--letra-xs); pointer-events: none; corner-shape: squircle; }
+.grafico-globo-titulo { margin: 0 0 var(--esp-1); color: var(--tenue-texto); white-space: nowrap; }
+.grafico-globo-fila { display: flex; align-items: center; gap: var(--esp-2); margin: 0; white-space: nowrap; }
+.grafico-globo-fila strong { color: var(--texto); font-size: var(--letra-sm); font-weight: 600; }
+
+/* Ver datos: la tabla gemela, para lector, teclado y copiar */
+.grafico-datos > summary { display: inline-flex; align-items: center; gap: var(--esp-1); font-size: var(--letra-sm); color: var(--tenue-texto); cursor: pointer; }
+@media (hover: hover) {
+  .grafico-datos > summary:hover { color: var(--texto); }
+}
+.grafico-datos[open] > summary { margin-bottom: var(--esp-2); }
+/* data-sin-datos: la tabla sigue ahí para el lector de pantalla, no se ve. Igual que .solo-lector */
+figure.grafico[data-sin-datos] > .grafico-datos { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+
+/* Cuadrícula de gráficos: dos columnas si caben */
+.graficos-rejilla { display: grid; gap: var(--esp-4); grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); }
+
+@media (forced-colors: active) {
+  :is(.grafico-barra, .grafico-barra-h, .grafico-segmento, .grafico-celda, .grafico-clave, .grafico-punto) { forced-color-adjust: none; }
+  .grafico-trazo { forced-color-adjust: none; }
+}
+@media print {
+  .grafico-globo, .grafico-cruz { display: none; }
+  .grafico-lienzo, .grafico-extra, .grafico-leyenda { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .grafico-datos > summary { display: none; }
+}
+}

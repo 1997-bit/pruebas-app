@@ -1,0 +1,20 @@
+@layer componentes {
+/* Ayuda: texto corto, ancho de lectura */
+.articulo { max-width: 70ch; }
+.articulo h2 { font-size: var(--letra-lg); margin: var(--esp-6) 0 var(--esp-2); }
+.articulo :is(ol, ul) { display: grid; gap: var(--esp-2); margin: 0 0 var(--esp-4); padding-left: var(--esp-5); }
+.articulo p { margin: 0 0 var(--esp-4); }
+.articulo .tabla-contenedor { margin-bottom: var(--esp-4); }
+/* Captura: borde para separarla del fondo, sobre todo en oscuro */
+.articulo img { display: block; max-width: 100%; height: auto; margin-top: var(--esp-2); border-radius: var(--radio-lg); }
+.articulo .diagrama { display: block; max-width: 100%; height: auto; margin-bottom: var(--esp-4); }
+.articulo-pie { margin-top: var(--esp-8); font-size: var(--letra-sm); }
+/* Cita: la comilla de apertura cuelga fuera del margen y la primera letra queda alineada con el texto
+   Safari lo hace con hanging-punctuation (en html); el resto, con sangría negativa del ancho de la comilla */
+.cita { margin: 0 0 var(--esp-4); padding-left: var(--esp-4); border-left: 2px solid var(--borde); font-size: var(--letra-lg); line-height: 1.4; letter-spacing: var(--tracking-lg); }
+.cita p { margin: 0; }
+.cita footer { margin-top: var(--esp-2); font-size: var(--letra-sm); color: var(--tenue-texto); }
+@supports not (hanging-punctuation: first) {
+  .cita p:first-child { text-indent: -0.42em; }
+}
+}

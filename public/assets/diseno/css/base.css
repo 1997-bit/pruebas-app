@@ -1,0 +1,307 @@
+/* Estilos base: genérico, elementos, objetos y utilidades. Requiere tokens.css. */
+@layer generico {
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* hidden gana a display */
+[hidden] {
+  display: none !important;
+}
+}
+
+@layer elementos {
+html {
+  /* Fondo también en html: el rebote del scroll y lo que sobra de la ventana son del mismo color */
+  background-color: var(--fondo);
+  /* Comillas y signos colgados fuera del margen: el texto se ve alineado. Solo Safari, el resto lo ignora */
+  hanging-punctuation: first allow-end last;
+  scrollbar-gutter: stable;
+  /* iOS no agranda el texto en horizontal */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  /* Sin recuadro gris de iOS: el :active de abajo avisa */
+  -webkit-tap-highlight-color: transparent;
+  /* Foco no queda bajo la barra sticky. WCAG 2.4.11 */
+  scroll-padding-top: 4.5rem;
+  scrollbar-color: var(--entrada) transparent;
+  /* Casillas, rangos y barras nativas con el color de marca */
+  accent-color: var(--primario);
+  /* Sin overscroll-behavior en la raíz: el rebote, tirar para recargar y deslizar para volver son del sistema
+     Las zonas con scroll propio (panel, sidebar, diálogos) sí lo cortan con contain */
+}
+
+body {
+  /* Tamaño óptico: Inter 4 trae el eje opsz (14–32) y lo ajusta solo según el tamaño. Explícito para que nadie lo apague */
+  font-optical-sizing: auto;
+  background-color: var(--fondo);
+  color: var(--texto);
+  font-family: var(--fuente);
+  font-size: var(--letra-base);
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: var(--tracking-base);
+  margin: 0;
+  /* Font smoothing: macOS engorda cada letra (resto del suavizado subpíxel); en fondo oscuro se ve borrosa y más pesada
+     antialiased la deja en su peso real. Solo hace algo en macOS. Pesos de 400 para arriba: con 300 o menos, revisar en pantalla 1x
+     -moz-: solo Firefox anterior a 128; desde ahí lee la propiedad de WebKit */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* viewport-fit=cover: el notch no tapa el contenido */
+  padding-inline: env(safe-area-inset-left, 0px) env(safe-area-inset-right, 0px);
+}
+
+h1 {
+  font-size: var(--letra-3xl);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: var(--tracking-titulo);
+}
+
+h2 {
+  font-size: var(--letra-2xl);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: var(--tracking-titulo);
+}
+
+h3 {
+  font-size: var(--letra-xl);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: var(--tracking-titulo);
+}
+
+h4 {
+  font-size: var(--letra-lg);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: var(--tracking-lg);
+}
+
+/* Sin palabra sola en la última línea */
+h1, h2, h3, h4 { text-wrap: balance; }
+p, li, dd, figcaption, blockquote, caption { text-wrap: pretty; }
+
+small,
+figcaption {
+  font-size: var(--letra-sm);
+}
+
+a {
+  color: var(--enlace);
+}
+
+/* App con panel: alrededor se ve el sidebar */
+@media (width >= 37.5rem) {
+  html:has(> body.app) { background-color: var(--lateral); }
+}
+
+/* Texto seleccionado con el color de marca */
+::selection {
+  background: color-mix(in oklch, var(--primario), transparent 70%);
+}
+
+textarea {
+  field-sizing: content;
+  resize: none;
+  scrollbar-width: none;
+  max-width: 100%;
+}
+
+/* Firefox sin field-sizing: redimensionar a mano */
+@supports not (field-sizing: content) {
+  textarea {
+    resize: vertical;
+    scrollbar-width: auto;
+  }
+}
+
+/* Foco visible: halo ancho pegado a la forma, como macOS. 3:1 contra el fondo */
+:focus-visible {
+  outline: 3px solid color-mix(in oklch, var(--anillo) 75%, transparent);
+  outline-offset: 1px;
+}
+
+kbd {
+  display: inline-block;
+  min-width: 1.5em;
+  padding: 1px var(--esp-2);
+  border: 1px solid var(--entrada);
+  border-bottom-width: 2px;
+  border-radius: var(--radio-sm);
+  font-family: var(--fuente-mono);
+  font-size: var(--letra-xs);
+  text-align: center;
+}
+
+}
+
+@layer objetos {
+/* Íconos: <svg class="icono"> */
+.icono {
+  /* Alineación óptica: el ícono se ve centrado con el texto, no con la caja */
+  vertical-align: -0.125em;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  /* Trazo según el peso del texto, como SF Symbols: fino junto a texto normal */
+  stroke-width: 1.75;
+}
+:is(.btn, [aria-current], strong, th) .icono { stroke-width: 2; }
+
+/* Alineación óptica por ícono: al centro va el peso, no la caja
+   Medido con la prueba del desenfoque: centro de la tinta desenfocada contra el centro de la caja, en la grilla de 24
+   Se corrige la mitad del desvío, en % de su caja (escala con el tamaño). Solo los que se pasan de 1 unidad
+   Ícono nuevo: medirlo igual antes de sumarlo aquí */
+.icono:has(> path[d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"]):has(> path[d="M12 15V3"]) { translate: 0 -6.5%; }        /* download: bandeja abajo */
+.icono:has(> path[d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"]):has(> path[d="M12 3v12"]) { translate: 0 -3.8%; }        /* upload */
+.icono:has(> path[d="M3 3v16a2 2 0 0 0 2 2h16"]) { translate: 3.4% -5.3%; }                                                   /* chart-column: ejes abajo a la izquierda */
+.icono:has(> path[d="m4 17 6-6-6-6"]) { translate: 4.5% -3.5%; }                                                              /* terminal */
+.icono:has(> path[d^="m21.73 18-8-14"]) { translate: 0 -4.2%; }                                                              /* triangle-alert: base ancha */
+.icono:has(> path[d="m16 17 5-5-5-5"]) { translate: 4% 0; }                                                                    /* log-out */
+.icono:has(> path[d^="M14 2v6a2 2 0 0 0 .245.96"]) { translate: 0 -3%; }                                                       /* flask-conical */
+.icono:has(> rect[y="11"][height="11"]) { translate: 0 -2.3%; }                                                                /* lock: cuerpo abajo */
+}
+
+@layer objetos {
+.acciones { display: flex; gap: var(--esp-2); flex-wrap: wrap; justify-content: flex-end; }
+.acciones-separadas { justify-content: space-between; }
+}
+
+@layer objetos {
+.pila { display: flex; flex-direction: column; gap: var(--esp-4); }
+.fila { display: flex; flex-wrap: wrap; align-items: center; gap: var(--esp-2); }
+
+}
+
+@layer objetos {
+/* <aside> de datos primero en el HTML: se imprime primero
+   En pantalla a la derecha. Angosto: debajo. Decide el ancho del contenido */
+
+.vista-detalle {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(14rem, 18rem);
+  align-items: start;
+  gap: var(--esp-4);
+}
+.vista-detalle > aside { grid-column: 2; grid-row: 1; }
+@container principal (width < 48rem) {
+  .vista-detalle { grid-template-columns: 1fr; }
+  .vista-detalle > aside { grid-column: auto; grid-row: auto; order: 1; }
+}
+/* Inspector de macOS: el aside se oculta con [data-inspector-alternar] o la tecla i. Se recuerda. Papel: siempre */
+[data-inspector="oculto"] .vista-detalle { grid-template-columns: minmax(0, 1fr); }
+[data-inspector="oculto"] .vista-detalle > aside { display: none; }
+@media print {
+  [data-inspector="oculto"] .vista-detalle > aside { display: block; }
+}
+
+}
+
+@layer utilidades {
+/* Solo lectores de pantalla */
+.solo-lector {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Números que cambian o se comparan en columna: todos los dígitos del mismo ancho. No hace falta letra mono
+   Proporcionales en una frase y en cifras grandes que no cambian solas */
+.tabular,
+time[data-relativo] { font-variant-numeric: tabular-nums; }
+
+/* Excepción al suavizado de body: una zona que quiere el de macOS por defecto, como un texto fino que necesita el engorde */
+.subpixel {
+  -webkit-font-smoothing: subpixel-antialiased;
+  -moz-osx-font-smoothing: auto;
+}
+
+/* Grano en materiales y velos. Sin transparencia reducida: ahí todo es sólido */
+@media (prefers-reduced-transparency: no-preference) {
+  :is(.app-barra, .usuario-flotante, .proyecto-flotante, .menu, .barra-inferior, .barra-seleccion, .aviso-flotante, .grafico-globo) { background-image: var(--ruido); }
+  dialog.dialogo::backdrop { background-image: var(--ruido), var(--velo); }
+  .velo { background-image: var(--ruido), var(--velo); }
+  @media (width < 37.5rem) {
+    .sidebar { background-image: var(--ruido); }
+  }
+}
+
+/* Desvanecer al borde de lo que tiene scroll: solo si hay más contenido de ese lado
+   Línea de tiempo del scroll propio; sin scroll la animación no corre y no hay fundido
+   Solo en listas sin borde ni sombra: la máscara también los borraría */
+@property --fundido-inicio { syntax: "<length>"; inherits: false; initial-value: 0px; }
+@property --fundido-fin { syntax: "<length>"; inherits: false; initial-value: 0px; }
+@keyframes fundido {
+  0% { --fundido-inicio: 0px; --fundido-fin: 24px; }
+  6%, 94% { --fundido-inicio: 24px; --fundido-fin: 24px; }
+  100% { --fundido-inicio: 24px; --fundido-fin: 0px; }
+}
+@supports (animation-timeline: scroll()) {
+  :is(.sidebar-contenido, .paleta-lista, .tablero-lista) {
+    mask-image: linear-gradient(to bottom, transparent, #000 var(--fundido-inicio), #000 calc(100% - var(--fundido-fin)), transparent);
+    animation: fundido linear both;
+    animation-timeline: scroll(self block);
+  }
+  :is(.codigo-bloque pre, .log-detalle, .grafico-plano-calor) {
+    mask-image: linear-gradient(to right, transparent, #000 var(--fundido-inicio), #000 calc(100% - var(--fundido-fin)), transparent);
+    animation: fundido linear both;
+    animation-timeline: scroll(self inline);
+  }
+}
+
+/* Movimiento reducido a mano, igual que prefers-reduced-motion */
+[data-movimiento="si"] *,
+[data-movimiento="si"] *::before,
+[data-movimiento="si"] *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+[data-subrayar="si"] .app-principal a:not(.btn, .cifra-enlace, .tareas a, .pestanas a, .tarjeta-caso, .matriz-celda) { text-decoration: underline; text-decoration-color: currentColor; text-underline-offset: 3px; }
+
+/* Ajustes → Densidad compacta */
+[data-densidad="compacta"] .tabla :is(th, td) { padding-block: var(--esp-2); }
+[data-densidad="compacta"] .tareas a { padding-block: var(--esp-1); }
+[data-densidad="compacta"] .tarjeta { padding: var(--esp-4); }
+
+/* Al tocar, como iOS. Controles: se encogen rápido y vuelven con resorte
+   Filas de lista: se resaltan, capa del color del texto al 10 %. Al final: el hover no la borra
+   Hover: sin transición. Es lo que más se dispara; con fundido la interfaz va detrás del puntero */
+:is(.btn, .chip-quitar, .paginacion a, .resultado-opcion, .opcion-tarjeta, .cifra-enlace, .tarjeta-caso, .barra-boton, .segmentado label, .barra-inferior a, .stepper-botones button, .grafico-leyenda button) {
+  transition: scale var(--dur-soltar) var(--curva-entrar);
+}
+/* Superficie más grande, encoge menos: a la misma escala sus bordes se mueven varios pixeles */
+:is(.cifra-enlace, .tarjeta-caso) { --apretar: 0.98; }
+.opcion-tarjeta { --apretar: 0.99; }
+:is(.btn, .chip-quitar, .paginacion a, .resultado-opcion, .opcion-tarjeta, .cifra-enlace, .tarjeta-caso, .barra-boton, .segmentado label, .barra-inferior a, .stepper-botones button, .grafico-leyenda button):active {
+  scale: var(--apretar);
+  transition-duration: var(--dur-apretar);
+}
+/* Deshabilitado no se aprieta. El que muestra globo sí recibe el mouse */
+:is(:disabled, [aria-disabled="true"]):active { scale: none; }
+:is(.pestanas a, .tareas a, .sidebar-boton, .sidebar-subboton, a.lista-fila, label.lista-fila):active {
+  background-image: linear-gradient(color-mix(in oklch, currentColor 10%, transparent) 0 0);
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(.btn, .chip-quitar, .paginacion a, .resultado-opcion, .opcion-tarjeta, .cifra-enlace, .tarjeta-caso, .barra-boton, .segmentado label, .barra-inferior a, .stepper-botones button, .grafico-leyenda button):active { scale: none; }
+}
+[data-movimiento="si"] :is(.btn, .chip-quitar, .paginacion a, .resultado-opcion, .opcion-tarjeta, .cifra-enlace, .tarjeta-caso, .barra-boton, .segmentado label, .barra-inferior a, .stepper-botones button, .grafico-leyenda button):active { scale: none; }
+
+/* Curvas continuas G2, como los íconos y ventanas de Apple. Sin soporte: circulares
+   No en cápsulas ni círculos: ahí la curva ya es perfecta */
+:is(.tarjeta, .dialogo, .control, .usuario-flotante, .proyecto-flotante, .app-cuerpo, .sidebar, .tabla-contenedor, .alerta, .filtros,
+  .segmentado, .segmentado label, .pestanas, .pestanas a, .sidebar-boton, .sidebar-subboton, .barra-boton, .paginacion a, .tareas a,
+  .opcion-tarjeta, .resultado-opcion, .vacio, .vacio-icono, .opcion-icono, .archivos, .archivo-icono, .marca-icono, .avatar-cuadrado,
+  .tablero-columna, .cronograma-contenedor, .log-detalle, .articulo img, .vista-previa, .matriz-celda, .paleta-lista [role="option"], .saltar, kbd,
+  .menu, .menu-item, .lista-agrupada, .stepper-botones, .aviso-flotante, .zona-archivos, .codigo-bloque, .arbol summary, .arbol a, .grafico-celda) {
+  corner-shape: squircle;
+}
+.segmentado[data-deslizar]::before,
+[data-tooltip]::after { corner-shape: squircle; }
+/* Aparte: sin ::picker la regla entera se cae */
+.select .control::picker(select) { corner-shape: squircle; }
+}
+

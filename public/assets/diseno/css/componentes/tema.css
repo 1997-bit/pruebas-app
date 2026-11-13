@@ -1,0 +1,12 @@
+@layer componentes {
+.tema-sol { display: none; }
+:root[data-tema="dark"] .tema-sol { display: block; }
+:root[data-tema="dark"] .tema-luna { display: none; }
+/* Botón de solo ícono: luna y sol encimados, cambian como Copiar, con fundido, escala y 2px de desenfoque
+   Con texto (menú de layout.html) no: el que se oculta seguiría ocupando lugar */
+.btn-icono:has(> .tema-luna) { display: inline-grid; place-items: center; }
+.btn-icono > :is(.tema-luna, .tema-sol) { display: block; grid-area: 1 / 1; transition: opacity var(--dur-corta) var(--curva-entrar), scale var(--dur-corta) var(--curva-entrar), filter var(--dur-corta) var(--curva-entrar); }
+.btn-icono > .tema-sol, :root[data-tema="dark"] .btn-icono > .tema-luna { opacity: 0; scale: 0.5; filter: blur(2px); }
+:root[data-tema="dark"] .btn-icono > .tema-sol { opacity: 1; scale: 1; filter: none; }
+@media (prefers-reduced-motion: reduce) { .btn-icono > :is(.tema-luna, .tema-sol) { transition: opacity var(--dur-corta); scale: none !important; filter: none !important; } }
+}

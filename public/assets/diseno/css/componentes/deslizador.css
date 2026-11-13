@@ -1,0 +1,26 @@
+@layer componentes {
+/* Deslizador: input range con el tramo recorrido en color. --pct lo pone interfaz.js; sin JS, sin relleno
+   <div class="campo"><label for="v">Volumen <output for="v">40</output></label><input class="deslizador" type="range" id="v"></div> */
+.deslizador {
+  --pct: 0%;
+  appearance: none;
+  width: 100%;
+  height: var(--alto-sm);
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.deslizador::-webkit-slider-runnable-track { height: 4px; border-radius: var(--radio-total); background: linear-gradient(to right, var(--primario) var(--pct), var(--tenue-texto) var(--pct)); }
+.deslizador::-moz-range-track { height: 4px; border-radius: var(--radio-total); background: var(--tenue-texto); }
+.deslizador::-moz-range-progress { height: 4px; border-radius: var(--radio-total); background: var(--primario); }
+.deslizador::-webkit-slider-thumb { appearance: none; width: 22px; height: 22px; margin-top: -9px; border: 0; border-radius: 50%; background: oklch(100% 0 0); box-shadow: 0 2px 6px oklch(0% 0 0 / 0.2), 0 0 0 0.5px oklch(0% 0 0 / 0.08); transition: scale var(--dur-resorte) var(--resorte); }
+.deslizador::-moz-range-thumb { width: 22px; height: 22px; border: 0; border-radius: 50%; background: oklch(100% 0 0); box-shadow: 0 2px 6px oklch(0% 0 0 / 0.2), 0 0 0 0.5px oklch(0% 0 0 / 0.08); }
+.deslizador:active::-webkit-slider-thumb { scale: 1.15; }
+.deslizador:focus-visible { outline: none; }
+.deslizador:focus-visible::-webkit-slider-thumb { outline: 3px solid color-mix(in oklch, var(--anillo) 75%, transparent); outline-offset: 1px; }
+.deslizador:focus-visible::-moz-range-thumb { outline: 3px solid color-mix(in oklch, var(--anillo) 75%, transparent); outline-offset: 1px; }
+.campo output { float: right; font-weight: 400; color: var(--tenue-texto); font-variant-numeric: tabular-nums; }
+@media (forced-colors: active) {
+  .deslizador::-webkit-slider-runnable-track { background: ButtonText; }
+}
+}

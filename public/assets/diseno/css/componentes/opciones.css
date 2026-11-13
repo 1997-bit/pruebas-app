@@ -1,0 +1,108 @@
+@layer componentes {
+.grupo {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-2);
+}
+.grupo > legend { padding: 0; margin-bottom: var(--esp-2); }
+.opcion {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--esp-2);
+  font-size: var(--letra-sm);
+  cursor: pointer;
+}
+.grupo-fila { flex-direction: row; flex-wrap: wrap; gap: var(--esp-2) var(--esp-5); }
+/* Opción en tarjeta con borde. Marcada en azul */
+.opcion-tarjeta {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--esp-3);
+  padding: 10px var(--esp-3);
+  border: var(--fino) solid var(--borde);
+  border-radius: var(--radio-lg);
+}
+.opcion-tarjeta > span:not(.opcion-icono) { flex: 1; }
+.opcion-tarjeta input { margin-top: 2px; }
+.opcion-tarjeta small { display: block; color: var(--tenue-texto); font-size: var(--letra-xs); }
+@media (hover: hover) {
+  .opcion-tarjeta:hover { background: var(--acento); }
+}
+.opcion-tarjeta:has(input:checked) { background: var(--info-suave); border-color: var(--primario); }
+.opcion-tarjetas { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: var(--esp-3); }
+/* Segmentado: radios como pestañas. Marcado: pastilla blanca sobre gris. Radio de la opción concéntrico */
+.segmentado { --radio-adentro: max(0px, var(--radio-lg) - var(--esp-1) - var(--fino)); display: inline-flex; flex-wrap: wrap; align-self: flex-start; max-width: 100%; gap: 2px; padding: var(--esp-1); background: var(--tenue); border: var(--fino) solid var(--borde); border-radius: var(--radio-lg); }
+.segmentado label {
+  position: relative; display: inline-flex; align-items: center; gap: var(--esp-2); min-height: var(--alto-sm); padding: var(--esp-1) var(--esp-3);
+  color: var(--tenue-texto); font-size: var(--letra-sm); font-weight: 500; white-space: nowrap; border-radius: var(--radio-adentro); cursor: pointer;
+}
+.segmentado input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+@media (hover: hover) {
+  .segmentado label:hover { color: var(--texto); }
+}
+.segmentado label:has(input:checked) { color: var(--texto); background: var(--segmento); box-shadow: var(--sombra-xs), 0 2px 6px var(--sombra-cerca); }
+/* Con JS, interfaz.js: la pastilla es una sola y se desliza con resorte a la marcada. --x, --y, --w, --h */
+.segmentado[data-deslizar] { position: relative; isolation: isolate; }
+.segmentado[data-deslizar]::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  left: 0;
+  width: var(--w, 0);
+  height: var(--h, 0);
+  translate: var(--x, 0) var(--y, 0);
+  background: var(--segmento);
+  border-radius: var(--radio-adentro);
+  box-shadow: var(--sombra-xs), 0 2px 6px var(--sombra-cerca);
+  transition: translate var(--dur-resorte) var(--resorte), width var(--dur-resorte) var(--resorte), height var(--dur-resorte) var(--resorte);
+}
+.segmentado[data-deslizar="quieto"]::before { transition: none; }
+.segmentado[data-deslizar] label:has(input:checked) { background: none; box-shadow: none; }
+@media (prefers-reduced-motion: reduce) {
+  .segmentado[data-deslizar]::before { transition: none; }
+}
+.segmentado label:has(input:focus-visible) { outline: 2px solid var(--anillo); outline-offset: 2px; }
+.segmentado:has(input[aria-invalid="true"]) { border-color: var(--error); }
+.segmentado .icono { width: 16px; height: 16px; }
+/* Punto con el color de la variante del catálogo */
+.segmentado .punto { width: 8px; height: 8px; padding: 0; border: 0; border-radius: 50%; background: var(--fuerte, var(--tenue-texto)); }
+
+@media (pointer: coarse) {
+  .opcion { min-height: var(--alto-lg); }
+  .segmentado label { min-height: var(--alto-lg); }
+}
+
+@media (forced-colors: active) {
+  .opcion-tarjeta:has(input:checked),
+  .segmentado label:has(input:checked) { outline: 2px solid Highlight; }
+}
+}
+
+@layer componentes {
+/* Radio: círculo fino. Marcado: anillo grueso primario */
+input[type="radio"] {
+  appearance: none;
+  flex-shrink: 0;
+  display: inline-grid;
+  place-content: center;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  border: 1px solid var(--entrada);
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+input[type="radio"]:checked { border: 5px solid var(--primario); background: var(--fondo); }
+input[type="radio"]:focus-visible { outline: 2px solid var(--anillo); outline-offset: 2px; }
+input[type="radio"]:disabled { opacity: 0.5; cursor: not-allowed; }
+input[type="radio"][aria-invalid="true"] { border-color: var(--error); }
+
+@media (forced-colors: active) {
+  input[type="radio"]:checked { forced-color-adjust: none; background: Canvas; border-color: Highlight; }
+}
+}

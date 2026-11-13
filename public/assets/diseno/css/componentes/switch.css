@@ -1,0 +1,51 @@
+@layer componentes {
+/* Switch tipo iOS: checkbox con role="switch". Proporción 51 × 31, pulgar blanco con sombra
+   Al apretar el pulgar se estira, como en iOS. --estirar en :active */
+
+.switch {
+  --ancho: 2.5rem;
+  --alto: 1.5rem;
+  --pulgar: calc(var(--alto) - 6px);   /* 1px de borde y 2px de aire por lado */
+  --estirar: 0px;
+  appearance: none;
+  flex-shrink: 0;
+  position: relative;
+  width: var(--ancho);
+  height: var(--alto);
+  margin: 0;
+  border: 1px solid transparent;   /* forced-colors: se ve el borde */
+  border-radius: var(--radio-total);
+  background: var(--tenue-texto); /* apagado: 3:1 contra el fondo, WCAG 1.4.11 */
+  cursor: pointer;
+  transition: background var(--dur-media) var(--curva);
+}
+.switch::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 2px;
+  width: calc(var(--pulgar) + var(--estirar));
+  height: var(--pulgar);
+  border-radius: var(--radio-total);
+  background: oklch(100% 0 0);
+  box-shadow: 0 2px 6px oklch(0% 0 0 / 0.15), 0 0 0 0.5px oklch(0% 0 0 / 0.04);
+  translate: 0 -50%;
+  transition: translate var(--dur-resorte) var(--resorte), width var(--dur-resorte) var(--resorte);
+}
+.switch:checked { background: var(--interruptor); }
+.switch:checked::before { translate: calc(var(--ancho) - 6px - var(--pulgar) - var(--estirar)) -50%; }
+.switch:active,
+label:active > .switch { --estirar: 6px; }
+.switch:focus-visible { outline: 3px solid color-mix(in oklch, var(--anillo) 75%, transparent); outline-offset: 1px; }
+/* Táctil: tamaño real de iOS */
+@media (pointer: coarse) {
+  .switch { --ancho: 3.1875rem; --alto: 1.9375rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .switch, .switch::before { transition: none; }
+}
+
+@media (forced-colors: active) {
+  .switch:checked { forced-color-adjust: none; background: Highlight; }
+}
+}

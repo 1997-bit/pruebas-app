@@ -1,0 +1,25 @@
+@layer componentes {
+.ajuste { padding: var(--esp-4) var(--esp-5); border: var(--fino) solid var(--borde); }
+.ajuste > legend { float: left; width: 100%; font-weight: 600; }
+/* Radio a la derecha y centrado */
+.ajuste .opcion-tarjeta { align-items: center; }
+.ajuste .opcion-tarjeta input { margin-top: 0; }
+.opcion-icono { display: grid; place-items: center; width: 28px; height: 28px; border-radius: var(--radio-md); background: var(--tenue); }
+.opcion-icono .icono { width: 16px; height: 16px; }
+.ajuste small { display: block; color: var(--tenue-texto); font-size: var(--letra-xs); }
+.ajuste-estado:empty { display: none; }
+.ajuste-estado { margin: 0; font-size: var(--letra-sm); color: var(--tenue-texto); }
+
+.ajuste-switch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-4);
+  margin-top: var(--esp-2);
+  padding-top: var(--esp-4);
+  border-top: var(--fino) solid var(--borde);
+  font-size: var(--letra-sm);
+  cursor: pointer;
+}
+.ajuste > legend + .ajuste-switch { margin-top: 0; padding-top: 0; border-top: 0; }
+}

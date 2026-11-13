@@ -1,0 +1,202 @@
+@layer componentes {
+.tabla-contenedor {
+  overflow-x: auto;
+  contain: paint; /* frena el desborde, #39. Recorta lo position: fixed de adentro */
+  background: var(--fondo);
+  border: var(--fino) solid var(--borde);
+  border-radius: var(--radio-xl);
+}
+/* Encabezado fijo al bajar. clip y no auto: auto crea scroll propio y sticky no ve el de la página */
+.encabezado-fijo { overflow-x: clip; contain: none; }
+.encabezado-fijo thead th { position: sticky; top: var(--barra-alto); z-index: 1; }
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--letra-sm);
+  font-variant-numeric: tabular-nums;
+}
+.tabla th,
+.tabla td {
+  text-align: left;
+  padding: var(--esp-3);
+  border-bottom: var(--fino) solid var(--borde);
+  white-space: nowrap;
+}
+.tabla th { color: var(--tenue-texto); font-weight: 500; background: var(--tenue); }
+@media (hover: hover) {
+  .tabla tbody tr:hover { background: color-mix(in oklch, var(--acento), transparent 50%); }
+}
+.tabla tbody tr:last-child :is(td, th) { border-bottom: 0; }
+.tabla .celda-acciones { width: 1%; text-align: right; }
+/* Números a la derecha: se comparan por columna */
+.tabla .num { text-align: right; }
+.tabla .celda-acciones .acciones { flex-wrap: nowrap; gap: var(--esp-1); }
+.tabla .celda-larga { white-space: normal; min-width: 16rem; }
+/* Columna que ordena, como macOS: enlace al servidor (?orden=), flecha en la actual. aria-sort en el th */
+.tabla th .orden { display: inline-flex; align-items: center; gap: var(--esp-1); color: inherit; text-decoration: none; }
+.tabla th .orden::after {
+  content: "";
+  width: 14px;
+  height: 14px;
+  background: currentColor;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center / contain no-repeat;
+  opacity: 0;
+}
+@media (hover: hover) {
+  .tabla th .orden:hover { color: var(--texto); }
+  .tabla th .orden:hover::after { opacity: 0.5; }
+}
+.tabla th[aria-sort] { color: var(--texto); }
+.tabla th[aria-sort] .orden::after { opacity: 1; }
+.tabla th[aria-sort="ascending"] .orden::after { rotate: 180deg; }
+/* Columna de números sin dato: raya tenue. El lector oye el texto */
+.sin-dato { color: var(--tenue-texto); }
+
+/* Menos de 64rem: scroll de lado. Sin encabezado fijo: el scroll propio lo rompe */
+@media (width < 64rem) {
+  .encabezado-fijo { overflow-x: auto; contain: paint; }
+  .encabezado-fijo thead th { position: static; top: auto; }
+}
+/* Tablet: primera columna fija y sombra a la derecha si hay más */
+@media (37.5rem <= width < 64rem) {
+  .tabla-contenedor {
+    background:
+      linear-gradient(to left, var(--fondo) 30%, transparent) right / 2rem 100% no-repeat local,
+      radial-gradient(farthest-side at 100% 50%, var(--sombra-color), transparent) right / 0.75rem 100% no-repeat scroll,
+      var(--fondo);
+  }
+  .tabla-contenedor .tabla :is(th, td):first-child { position: sticky; left: 0; z-index: 2; background: var(--fondo); }
+  /* Y sombra a la derecha de la columna fija, solo con algo pasando por debajo. Sin scroll-state, sin sombra */
+  .tabla-contenedor { container: tabla / scroll-state; }
+  @container tabla scroll-state(scrollable: inline-start) {
+    .tabla :is(th, td):first-child { box-shadow: 0.5rem 0 0.5rem -0.5rem var(--sombra-color); }
+  }
+  .tabla-contenedor .tabla :is(thead, tfoot) th:first-child,
+  .tabla-contenedor .tabla .fila-grupo th { background: var(--tenue); }
+  @media (hover: hover) {
+    .tabla-contenedor .tabla tbody tr:hover > :first-child { background: color-mix(in oklch, var(--acento), var(--fondo)); }
+  }
+  .tabla-contenedor .tabla:not(.tabla-editable) tbody tr:focus-within > :first-child { background: color-mix(in oklab, var(--primario) 12%, var(--fondo)); }
+}
+
+.tabla .celda-centro { text-align: center; }
+.tabla input:is([type="checkbox"], [type="radio"]) {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  vertical-align: middle;
+  accent-color: var(--primario);
+}
+
+/* <th scope="row"> sin fondo */
+.tabla tbody th { background: none; color: var(--texto); }
+/* Separa condiciones y acciones */
+.tabla tbody .fila-grupo th {
+  padding: var(--esp-2) var(--esp-3);
+  background: var(--tenue);
+  color: var(--tenue-texto);
+  font-size: var(--letra-xs);
+  font-weight: 600;
+}
+/* Totales */
+.tabla tfoot :is(th, td) {
+  background: var(--tenue);
+  color: var(--texto);
+  font-weight: 600;
+  border-top: var(--fino) solid var(--borde);
+  border-bottom: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+}
+
+@layer componentes {
+/* Tabla editable: name="campo[]" y aria-label por control. Filas en interfaz.js */
+
+.tabla-editable th { white-space: normal; }
+.tabla-editable td { padding: 6px 8px; vertical-align: top; white-space: normal; }
+.tabla-editable tbody th { vertical-align: top; padding-top: 14px; }
+.tabla-editable tbody tr:hover { background: none; }
+.tabla-editable :is(td, th) .control { min-width: 9rem; }
+.tabla-editable textarea.control { min-height: var(--alto-md); padding-block: 6px; }
+.tabla-editable .celda-corta .control { min-width: 5rem; }
+.tabla-editable td.celda-acciones { vertical-align: top; padding-top: 8px; }
+.tabla-editable td:has(> input[type="checkbox"]) { vertical-align: middle; }
+.tabla-editable .control[type="number"] { font-variant-numeric: tabular-nums; }
+/* Alinea con el texto de los controles */
+.tabla-editable tfoot td { padding: 10px 8px 10px 21px; }
+}
+
+@layer componentes {
+/* Solo móvil: en tablet la tabla se desliza. Cada <td> con data-columna */
+@media (width < 37.5rem) {
+  .tabla-tarjetas thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .tabla-tarjetas,
+  .tabla-tarjetas tbody,
+  .tabla-tarjetas tr,
+  .tabla-tarjetas td {
+    display: block;
+  }
+  /* Separador con sangría, como las listas de iOS */
+  .tabla-tarjetas tr {
+    padding: var(--esp-3);
+    background: linear-gradient(var(--borde) 0 0) center bottom / calc(100% - 2 * var(--esp-3)) var(--fino) no-repeat;
+  }
+  .tabla-tarjetas tbody tr:last-child { border-bottom: 0; }
+  .tabla-tarjetas td {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--esp-4);
+    padding: var(--esp-1) 0;
+    border: 0;
+    white-space: normal;
+    text-align: right;
+  }
+  .tabla-tarjetas td::before {
+    content: attr(data-columna);
+    flex-shrink: 0;
+    color: var(--tenue-texto);
+    font-weight: 500;
+    text-align: left;
+  }
+  .tabla-tarjetas .celda-larga { min-width: 0; }
+  .tabla-tarjetas .celda-acciones {
+    width: auto;
+    justify-content: flex-end;
+    padding-top: var(--esp-2);
+  }
+  .tabla-tarjetas .celda-acciones::before { content: none; }
+
+  /* Filas editables */
+  .tabla-tarjetas tfoot { display: block; }
+  .tabla-tarjetas tbody th,
+  .tabla-tarjetas tfoot th {
+    display: block;
+    padding: 0 0 var(--esp-2);
+    border: 0;
+    white-space: normal;
+  }
+  .tabla-tarjetas tfoot tr { background: var(--tenue); }
+  .tabla-tarjetas tfoot :is(th, td) { border: 0; }
+  .tabla-tarjetas.tabla-editable td:not(.celda-acciones) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+    padding: 6px 0;
+    text-align: left;
+  }
+  .tabla-tarjetas.tabla-editable td .control { min-width: 0; }
+}
+}
+
+@layer app {
+/* j / k: fila con foco */
+.tabla:not(.tabla-editable) tbody tr:focus-within { background: color-mix(in oklab, var(--primario) 12%, var(--fondo)); }
+}

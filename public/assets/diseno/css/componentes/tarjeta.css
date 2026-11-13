@@ -1,0 +1,42 @@
+@layer componentes {
+.tarjeta {
+  background: var(--tarjeta);
+  color: var(--tarjeta-texto);
+  border: var(--fino) solid var(--borde);
+  border-radius: var(--radio-xl);
+  padding: var(--esp-5);
+  box-shadow: var(--sombra-xs);
+}
+
+/* Radio anidado (concentric corners): radio de adentro = radio de afuera − separación. Separación = relleno + borde
+   Cada contenedor publica --radio-adentro y lo que lo llena lo usa. Nunca menos de 0: si la separación es mayor, esquina recta
+   Tarjeta y diálogo: 16 − (20 + 1) < 0, así que lo que las llena de lado a lado va recto
+   Campos y botones no: tienen forma propia y no llenan la esquina */
+:is(.tarjeta, .dialogo) { --radio-adentro: max(0px, var(--radio-xl) - var(--esp-5) - var(--fino)); }
+:is(.tarjeta, .dialogo) :is(.tabla-contenedor, .alerta, .archivos, .codigo-bloque, .lista-agrupada, .zona-archivos, .vacio, .cronograma-contenedor) {
+  border-radius: var(--radio-adentro);
+}
+
+.tarjeta-encabezado {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--esp-1) var(--esp-4);
+  margin-bottom: var(--esp-4);
+}
+.tarjeta-encabezado:last-child { margin-bottom: 0; }
+.tarjeta-encabezado > :not(.acciones) { grid-column: 1; }
+.tarjeta-encabezado > .acciones { grid-column: 2; grid-row: 1 / span 2; align-self: start; }
+.tarjeta-titulo { margin: 0; font-size: var(--letra-lg); font-weight: 600; line-height: 1.3; letter-spacing: var(--tracking-lg); }
+.tarjeta-descripcion { margin: 0; font-size: var(--letra-sm); color: var(--tenue-texto); }
+.tarjeta-pie {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--esp-2);
+  margin-top: var(--esp-4);
+  padding-top: var(--esp-4);
+  border-top: var(--fino) solid var(--borde);
+}
+
+}

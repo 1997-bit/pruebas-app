@@ -1,0 +1,80 @@
+@layer componentes {
+/* Menú de acciones, como los de macOS: botón "…" con popover, y menú contextual
+   <button class="btn btn-secundario btn-icono" popovertarget="m" aria-label="Más acciones"> + <div class="menu" id="m" popover role="menu">
+   Pegado a su botón por el ancla de popovertarget. Contextual: clic derecho o mantener presionado en filas, interfaz.js */
+.menu {
+  inset: auto;
+  margin: var(--esp-1) 0;
+  min-width: 12rem;
+  max-width: min(20rem, calc(100vw - var(--esp-4)));
+  padding: var(--esp-1);
+  color: var(--flotante-texto);
+  background: var(--material-flotante);
+  -webkit-backdrop-filter: var(--material-filtro);
+  backdrop-filter: var(--material-filtro);
+  border: var(--fino) solid var(--borde);
+  border-radius: var(--radio-xl);
+  --radio-adentro: max(0px, var(--radio-xl) - var(--esp-1) - var(--fino));
+  box-shadow: var(--sombra-md);
+  position-area: block-end span-inline-start;
+  position-try-fallbacks: flip-block, flip-inline;
+  /* Se abre muchas veces al día: aparece al instante, como en macOS. Al cerrar, un fundido corto */
+  opacity: 0;
+  transition: opacity var(--dur-corta) var(--curva-salir), overlay var(--dur-corta) allow-discrete, display var(--dur-corta) allow-discrete;
+}
+.menu:popover-open { opacity: 1; transition: none; }
+/* Contextual: en el puntero, lo ubica interfaz.js */
+.menu-contextual { position-area: none; margin: 0; }
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-3);
+  width: 100%;
+  min-height: var(--alto-sm);
+  padding: var(--esp-1) var(--esp-3);
+  font: inherit;
+  font-size: var(--letra-sm);
+  color: inherit;
+  text-align: start;
+  text-decoration: none;
+  white-space: nowrap;
+  background: none;
+  border: 0;
+  border-radius: var(--radio-adentro);   /* concéntrico */
+  cursor: pointer;
+}
+/* Resaltado lleno del color de marca, como macOS */
+.menu-item:is(:hover, :focus-visible) { background: var(--primario); color: var(--primario-texto); outline: none; }
+.menu-item-peligro { color: var(--peligro-fuerte); }
+.menu-item-peligro:is(:hover, :focus-visible) { background: var(--peligro); color: var(--peligro-texto); }
+.menu-separador { margin: var(--esp-1) var(--esp-2); border: 0; border-top: var(--fino) solid var(--borde); }
+@media (pointer: coarse) {
+  .menu-item { min-height: var(--alto-tactil); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .menu { transition: none; }
+}
+@media (forced-colors: active) {
+  .menu-item:is(:hover, :focus-visible) { outline: 2px solid Highlight; }
+}
+/* Táctil: mantener presionado abre el menú propio, no el del sistema ni la selección de texto */
+@media (pointer: coarse) {
+  :is(.tabla tbody tr:has(.celda-acciones), .tarjeta-caso:has(.mover), .archivo:has(> .acciones)) { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+}
+}
+
+@layer componentes {
+/* Rango de fechas: filas de atajos, la elegida con ✓. Personalizado abajo, tras una línea. Todo es un form GET
+   <button popovertarget="rango"> + <form class="menu menu-rango" id="rango" popover method="get"> con .menu-item[name=rango][aria-checked] */
+.menu-item[aria-checked] { padding-left: var(--esp-2); }
+.menu-item[aria-checked]::before { content: ""; flex-shrink: 0; width: 16px; height: 16px; }
+.menu-item[aria-checked="true"]::before {
+  background: currentColor;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+.menu-item[aria-checked="true"] { font-weight: 600; }
+.menu-pie { display: grid; grid-template-columns: 1fr 1fr; gap: var(--esp-2); margin-top: var(--esp-1); padding: var(--esp-3) var(--esp-2) var(--esp-2); border-top: var(--fino) solid var(--borde); }
+.menu-pie label { display: flex; flex-direction: column; gap: 2px; font-size: var(--letra-xs); color: var(--tenue-texto); }
+.menu-pie .btn { grid-column: 1 / -1; }
+.menu-rango { min-width: 16rem; }
+}

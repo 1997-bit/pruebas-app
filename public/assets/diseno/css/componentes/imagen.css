@@ -1,0 +1,11 @@
+@layer componentes {
+/* Imágenes: contorno de 1px hacia adentro, casi invisible. Separa la foto del fondo, también en oscuro */
+:is(.articulo img, .vista-previa, .archivo-icono img, .avatar img) { outline: 1px solid var(--contorno-imagen); outline-offset: -1px; }
+/* Vista previa de la captura */
+.vista-previa {
+  max-width: 100%;
+  max-height: 10rem;
+  border-radius: var(--radio-md);
+  object-fit: contain;
+}
+}

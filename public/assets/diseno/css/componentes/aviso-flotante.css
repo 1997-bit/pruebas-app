@@ -1,0 +1,49 @@
+@layer componentes {
+.aviso-flotante {
+  position: fixed;
+  inset: auto;
+  margin: 0;
+  right: calc(var(--esp-4) + env(safe-area-inset-right, 0px));
+  bottom: calc(var(--esp-4) + env(safe-area-inset-bottom, 0px));
+  z-index: 70;
+  width: min(24rem, calc(100% - var(--esp-8)));
+  align-items: center;
+  box-shadow: var(--sombra-lg);
+  -webkit-backdrop-filter: var(--material-filtro);
+  backdrop-filter: var(--material-filtro);
+  /* Transición, no animación: si se cierra mientras entra, sale desde donde está */
+  transition: opacity var(--dur-corta) var(--curva-salir), translate var(--dur-corta) var(--curva-salir), display var(--dur-corta) allow-discrete;
+}
+.aviso-flotante[open] { transition: opacity var(--dur-corta) var(--curva), translate var(--dur-resorte) var(--resorte); }
+@starting-style {
+  .aviso-flotante[open] { opacity: 0; translate: 0 8px; }
+}
+/* Sin tono: material translúcido. Con tono, el de su alerta */
+.aviso-flotante:not(.alerta-error, .alerta-exito) { background: var(--material-flotante); }
+/* .alerta es grid: sin esto el dialog cerrado se ve */
+.aviso-flotante:not([open]) { display: none; opacity: 0; translate: 0 8px; }
+.aviso-flotante > .icono { margin-top: 0; }
+/* Siempre a la derecha del título, también en celular */
+.aviso-flotante .alerta-accion { grid-column: accion; grid-row: 1; display: flex; align-items: center; gap: var(--esp-1); margin: 0 0 0 var(--esp-3); }
+@keyframes subir { from { opacity: 0; translate: 0 8px; } }
+/* Celular: arriba, como las notificaciones de iOS. Deslizar hacia arriba lo cierra; en escritorio, hacia la derecha. interfaz.js */
+@media (width < 37.5rem) {
+  .aviso-flotante {
+    top: calc(var(--esp-2) + env(safe-area-inset-top, 0px));
+    bottom: auto;
+    left: var(--esp-2);
+    right: var(--esp-2);
+    width: auto;
+    border-radius: var(--radio-2xl);
+  }
+  .aviso-flotante:not([open]) { translate: 0 -100%; }
+  @starting-style {
+    .aviso-flotante[open] { translate: 0 -100%; }
+  }
+}
+.aviso-flotante { touch-action: none; }
+.aviso-flotante[data-arrastrando] { transition: none; }
+@media (prefers-reduced-motion: reduce) {
+  .aviso-flotante { transition: none; }
+}
+}

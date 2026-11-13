@@ -1,0 +1,58 @@
+@layer componentes {
+.codigo {
+  font-family: var(--fuente-mono);
+  color: var(--tenue-texto);
+  font-size: 0.8125rem;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+}
+
+@layer componentes {
+/* Bloque de código: cabecera con archivo, lenguaje y Copiar; números de línea; colores de js/resaltar.js
+   <figure class="codigo-bloque" data-lenguaje="js">
+     <figcaption class="codigo-cabeza"><span class="codigo-archivo">totales.js</span><span class="codigo-lenguaje">JavaScript</span>
+       <button class="btn btn-fantasma btn-icono btn-sm" type="button" data-copiar aria-label="Copiar código">(copy.svg) (check.svg)</button></figcaption>
+     <pre><code>…</code></pre>
+   </figure>
+   Copiar con ícono: pasa a ✓ un momento (interfaz.js). Sin cabecera: el botón flota arriba a la derecha */
+.codigo-bloque { position: relative; margin: 0; background: var(--tenue); border: var(--fino) solid var(--borde); border-radius: var(--radio-lg); overflow: hidden; }
+.codigo-cabeza { display: flex; align-items: center; gap: var(--esp-2); min-height: var(--alto-md); padding: var(--esp-1) var(--esp-1) var(--esp-1) var(--esp-4); border-bottom: var(--fino) solid var(--borde); font-family: var(--fuente-mono); font-size: var(--letra-xs); color: var(--tenue-texto); }
+.codigo-archivo { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.codigo-lenguaje { flex-shrink: 0; padding: 1px var(--esp-2); font-size: 0.6875rem; letter-spacing: 0.04em; text-transform: uppercase; border: var(--fino) solid var(--entrada); border-radius: var(--radio-total); }
+.codigo-cabeza [data-copiar] { margin-left: auto; color: var(--tenue-texto); }
+.codigo-bloque pre { margin: 0; padding: var(--esp-3) var(--esp-4); overflow-x: auto; font-family: var(--fuente-mono); font-size: var(--letra-xs); line-height: 1.7; tab-size: 2; }
+.codigo-bloque > [data-copiar] { position: absolute; top: var(--esp-2); right: var(--esp-2); }
+.codigo-bloque:has(> [data-copiar]) pre { padding-right: 6rem; }
+/* Ícono de copiar: ✓ mientras dice "Copiado" */
+/* Los dos íconos encimados: cambian con fundido, escala y 2px de desenfoque, que une las dos formas en una */
+[data-copiar]:has(> .icono) { display: inline-grid; place-items: center; }
+[data-copiar] > .icono { grid-area: 1 / 1; transition: opacity var(--dur-corta) var(--curva-entrar), scale var(--dur-corta) var(--curva-entrar), filter var(--dur-corta) var(--curva-entrar); }
+[data-copiar] .icono-copiado, [data-copiar][data-copiado] .icono-copiar { opacity: 0; scale: 0.5; filter: blur(2px); }
+[data-copiar][data-copiado] .icono-copiado { opacity: 1; scale: 1; filter: none; color: var(--exito-fuerte); }
+@media (prefers-reduced-motion: reduce) { [data-copiar] > .icono { transition: opacity var(--dur-corta); scale: none !important; filter: none !important; } }
+/* Números de línea: contador CSS, no se seleccionan ni se copian */
+.codigo-bloque code { counter-reset: linea; }
+.codigo-bloque .linea::before {
+  counter-increment: linea;
+  content: counter(linea);
+  display: inline-block;
+  width: 3ch;
+  margin-right: 2ch;
+  text-align: right;
+  color: var(--codigo-comentario);
+  user-select: none;
+  -webkit-user-select: none;
+}
+.codigo-bloque:has(.linea) pre { padding-left: var(--esp-2); }
+.tk-palabra { color: var(--codigo-palabra); }
+.tk-funcion { color: var(--codigo-funcion); }
+.tk-texto { color: var(--codigo-texto); }
+.tk-numero { color: var(--codigo-numero); }
+.tk-tipo { color: var(--codigo-tipo); }
+.tk-variable { color: var(--codigo-variable); }
+.tk-comentario { color: var(--codigo-comentario); font-style: italic; }
+@media (forced-colors: active) {
+  [class^="tk-"] { forced-color-adjust: auto; }
+}
+}

@@ -1,0 +1,45 @@
+/* PRUEBA: el panel tapa el sidebar en vez de que el sidebar se achique.
+   Solo escritorio (>= 64rem). Para quitarla, borrar el <link> en layouts/app.blade.php y este archivo.
+   Sin @layer: le gana a layout.css sin pelear especificidad */
+@media (width >= 64rem) {
+  /* Sidebar siempre completo, debajo del panel. Sin sticky ni z-index: no crea contexto de apilamiento
+     y los globos del rail pueden salir por encima del panel */
+  .sidebar { position: relative; z-index: auto; width: var(--lateral-ancho); }
+
+  .app-cuerpo {
+    position: relative;
+    z-index: 1;
+    box-shadow: var(--sombra-lg);
+    transition: margin-inline-start var(--dur-resorte) var(--resorte-suave);
+  }
+
+  /* Colapsado: el panel se corre encima y deja a la vista solo la franja de íconos */
+  [data-sidebar="colapsado"] {
+    .app-cuerpo { margin-inline-start: calc(var(--lateral-ancho-icono) - var(--lateral-ancho)); }
+
+    /* Deshace el rail de layout.css: los textos siguen en su lugar debajo, así nada salta mientras el panel se mueve */
+    .sidebar { width: var(--lateral-ancho); }
+    :is(.sidebar-texto, .flecha, .flecha-usuario, .sidebar-grupo-titulo) { position: static; width: auto; height: auto; clip-path: none; }
+    :is(.flecha, .flecha-usuario) { width: 16px; height: 16px; }
+    .sidebar-grupo-titulo { height: var(--alto-sm); overflow: visible; }
+    .sidebar-grupo { padding: var(--esp-2); }
+    :is(.sidebar-marca, .sidebar-usuario) { min-height: 3rem; }
+
+    /* Pero sin asomarse: el título empieza a 16px y los nombres a 40px, dentro de la franja de 48px */
+    :is(.sidebar-texto, .flecha, .flecha-usuario, .sidebar-grupo-titulo):not(:is(.proyecto-flotante, .usuario-flotante) *) { opacity: 0; }
+    /* Botones del ancho del ícono: la marca de la página actual y el hover quedan cuadrados, no cortados por el panel */
+    .sidebar-boton:not(:is(.proyecto-flotante, .usuario-flotante) *) { width: calc(var(--lateral-ancho-icono) - 2 * var(--esp-2)); }
+    :is(.sidebar-marca, .sidebar-usuario) { padding: 0; }
+    :is(.marca-icono, .avatar-cuadrado) { margin-left: 0; }
+  }
+
+  /* Al ritmo del panel. Los textos se van rápido al cerrar y vuelven con el panel al abrir */
+  .sidebar .sidebar-boton:not(:is(.proyecto-flotante, .usuario-flotante) *) { transition: width var(--dur-resorte) var(--resorte-suave), padding var(--dur-resorte) var(--resorte-suave); }
+  :is(.marca-icono, .avatar-cuadrado) { transition: margin-left var(--dur-resorte) var(--resorte-suave); }
+  .sidebar :is(.sidebar-texto, .flecha, .flecha-usuario, .sidebar-grupo-titulo) { transition: opacity var(--dur-media) var(--curva-entrar); }
+  [data-sidebar="colapsado"] .sidebar :is(.sidebar-texto, .flecha, .flecha-usuario, .sidebar-grupo-titulo) { transition-duration: var(--dur-corta); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-cuerpo, .sidebar .sidebar-boton, .marca-icono, .avatar-cuadrado { transition: none; }
+}

@@ -1,0 +1,276 @@
+/* Variables de diseño. --x es fondo; --x-texto, lo que va encima. Va primero: fija el orden de las capas. */
+
+/* Cascada: lo de abajo gana. !important al revés: base gana */
+@layer tokens, generico, elementos, objetos, componentes, app, utilidades;
+
+/* Inter local */
+/* font-display: optional. Si Inter ya está (caché o precarga) se usa desde el primer pintado; si no llega a tiempo,
+   queda la del sistema en esa página. Con swap el texto cambia de letra después de pintar y todo se reacomoda */
+@font-face {
+  font-family: "Inter";
+  src: url("../fuentes/InterVariable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: optional;
+}
+@font-face {
+  font-family: "Inter";
+  src: url("../fuentes/InterVariable-Italic.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: optional;
+}
+
+@layer tokens {
+/* Tema del sistema salvo <html data-tema>. light-dark(claro, oscuro) */
+:root {
+  color-scheme: light dark;
+  /* height: 0 → auto se puede animar: .plegable. Sin soporte, salta */
+  interpolate-size: allow-keywords;
+}
+:root[data-tema="light"] { color-scheme: light; }
+:root[data-tema="dark"]  { color-scheme: dark; }
+
+:root {
+  --fondo: light-dark(oklch(100% 0 0), oklch(21% 0.006 285));
+  --texto: light-dark(oklch(17.8% 0 0), oklch(91% 0 0));   /* oscuro: no blanco puro, con astigmatismo el texto muy claro hace halo */
+  --tarjeta: light-dark(oklch(100% 0 0), oklch(23.5% 0.006 285));
+  --tarjeta-texto: var(--texto);
+  --flotante: light-dark(oklch(100% 0 0), oklch(27% 0.006 285));
+  --flotante-texto: var(--texto);
+
+  --primario: oklch(54.5% 0.252 264);
+  --primario-texto: oklch(100% 0 0);
+  --secundario: light-dark(oklch(97% 0 0), oklch(29% 0.006 285));
+  --secundario-texto: var(--texto);
+  --tenue: light-dark(oklch(97% 0 0), oklch(29% 0.006 285));
+  --tenue-texto: light-dark(oklch(50% 0 0), oklch(75% 0.01 285));   /* oscuro: APCA Lc 57, 8:1 */
+  --acento: light-dark(oklch(95% 0 0), oklch(31% 0.006 285));   /* hover y selección */
+  --acento-texto: var(--texto);
+  /* Opción marcada del segmentado. Como Apple: en oscuro más clara que la pista, no más oscura */
+  --segmento: light-dark(oklch(100% 0 0), oklch(40% 0.006 285));
+
+  --destacado: oklch(73.2% 0.186 53);
+  --destacado-texto: oklch(17.8% 0 0);
+
+  /* Sólido: resultado marcado y barras en oscuro */
+  --peligro: oklch(58% 0.204 25);                                   /* FAULT */
+  --peligro-texto: oklch(100% 0 0);
+  --exito: oklch(75% 0.166 156);                                    /* OK */
+  --exito-texto: oklch(17.8% 0 0);
+  --aviso: oklch(88.6% 0.17 94);                                    /* Atención */
+  --aviso-texto: oklch(17.8% 0 0);
+  --info: oklch(54.5% 0.252 264);                                   /* En progreso */
+  --info-texto: oklch(100% 0 0);
+
+  /* Suave: fondo de insignia. Fuerte: texto sobre fondo, 4.5:1 */
+  --exito-suave: light-dark(oklch(96.1% 0.026 166), oklch(30% 0.06 155));
+  --exito-fuerte: light-dark(oklch(51.5% 0.112 156), oklch(78% 0.15 155));
+  --aviso-suave: light-dark(oklch(96.6% 0.053 94), oklch(32% 0.06 90));
+  --aviso-fuerte: light-dark(oklch(50.8% 0.108 73), oklch(85% 0.14 90));
+  --peligro-suave: light-dark(oklch(94.8% 0.023 18), oklch(30% 0.08 25));
+  --peligro-fuerte: light-dark(oklch(53.4% 0.193 25), oklch(72% 0.16 25));
+  --info-suave: light-dark(oklch(95% 0.024 270), oklch(30% 0.08 262));
+  --info-fuerte: light-dark(oklch(48% 0.219 264), oklch(75% 0.12 262));
+  --destacado-suave: light-dark(oklch(95.6% 0.031 67), oklch(32% 0.07 55));
+  --destacado-fuerte: light-dark(oklch(51.2% 0.133 51), oklch(80% 0.14 55));
+  --error: var(--peligro-fuerte);
+  --correcto: var(--exito-fuerte);
+
+  /* Separador fino: 1px; en pantalla retina 0.5px, más oscuro para verse igual */
+  --fino: 1px;
+  --borde: light-dark(oklch(93% 0 0), oklch(100% 0 0 / 8%));
+  --entrada: light-dark(oklch(65% 0 0), oklch(100% 0 0 / 35%));   /* borde de campo, 3:1. Siempre 1px */
+  --anillo: light-dark(oklch(54.5% 0.252 264), oklch(72% 0.13 260));
+  --enlace: light-dark(oklch(54.5% 0.252 264), oklch(72% 0.13 260));
+  --interruptor: var(--primario);   /* switch encendido */
+
+  /* Gráficos, js/graficos.js. Paleta categórica: 8 colores en orden fijo, nunca se ciclan. El 1 es el primario
+     Validada para daltonismo (protan y deutan ΔE ≥ 8 entre vecinos) en claro y oscuro. El orden es la seguridad: no se cambia
+     En claro 3, 4 y 5 quedan bajo 3:1 sobre blanco: la leyenda y la tabla de datos los acompañan siempre
+     Dispersión: solo los 3 primeros. Más de 8 series: se juntan en "Otros" con --serie-otro */
+  --serie-1: light-dark(oklch(54.5% 0.252 264), oklch(62% 0.2 264));
+  --serie-2: light-dark(#eb6834, #d95926);
+  --serie-3: light-dark(#1baf7a, #199e70);
+  --serie-4: light-dark(#eda100, #c98500);
+  --serie-5: light-dark(#e87ba4, #d55181);
+  --serie-6: light-dark(#008300, #008300);
+  --serie-7: light-dark(#4a3aa7, #9085e9);
+  --serie-8: light-dark(#e34948, #e66767);
+  --serie-otro: light-dark(oklch(82% 0.004 285), oklch(42% 0.006 285));   /* resto, en gris, cuando se destaca una */
+  /* Gráficos estadísticos: lo calculado en acento, el dato crudo en gris de contexto */
+  --grafico-acento: var(--serie-1);
+  /* Grano: rompe las bandas de los degradados y da textura a los materiales, como los de Apple. Gris medio al 7 % */
+  --ruido: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='r'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23r)'/%3E%3C/svg%3E");
+  /* Contorno de imágenes: separa la foto del fondo sin un borde que se note */
+  --contorno-imagen: light-dark(oklch(0% 0 0 / 0.1), oklch(100% 0 0 / 0.1));
+  --grafico-contexto: light-dark(oklch(68% 0.004 285), oklch(55% 0.006 285));
+  /* Divergente: dos polos opuestos y gris en el medio */
+  --divergente-medio: light-dark(oklch(95% 0 0), oklch(31% 0.006 285));
+  --grafico-rejilla: light-dark(oklch(93% 0 0), oklch(100% 0 0 / 8%));   /* hairline sólida, nunca punteada */
+  --grafico-eje: light-dark(oklch(80% 0 0), oklch(100% 0 0 / 22%));
+  --grafico-superficie: var(--tarjeta);   /* fondo del gráfico: separa marcas con 2px de este color */
+
+  /* Resaltado de código, js/resaltar.js. Todos ≥ 5.5:1 sobre --tenue en claro y oscuro */
+  --codigo-palabra: light-dark(oklch(50% 0.19 15), oklch(76% 0.14 15));      /* palabras clave, etiquetas HTML, operadores */
+  --codigo-funcion: light-dark(oklch(47% 0.19 300), oklch(79% 0.12 300));     /* funciones */
+  --codigo-texto: light-dark(oklch(47% 0.12 150), oklch(81% 0.13 150));       /* textos entre comillas */
+  --codigo-numero: light-dark(oklch(48% 0.16 255), oklch(78% 0.11 255));      /* números y unidades */
+  --codigo-tipo: light-dark(oklch(46% 0.14 280), oklch(80% 0.09 280));        /* tipos, clases e ids de CSS */
+  --codigo-variable: light-dark(oklch(50% 0.13 55), oklch(80% 0.12 60));      /* atributos HTML, propiedades y variables CSS */
+  --codigo-comentario: light-dark(oklch(50% 0 0), oklch(72% 0.01 285));       /* comentarios y números de línea */
+
+  /* Diálogos y sidebar móvil. Más oscuro en tema oscuro */
+  --velo: linear-gradient(
+    light-dark(oklch(0% 0 0 / 0.10), oklch(0% 0 0 / 0.25)),
+    light-dark(oklch(0% 0 0 / 0.15), oklch(0% 0 0 / 0.35))
+  );
+  --velo-desenfoque: blur(8px);
+  --velo-respaldo: oklch(0% 0 0 / 0.4); /* sin backdrop-filter */
+
+  /* Materiales: fondo translúcido y desenfocado. Barra, menús, avisos y sidebar móvil
+     Reducir transparencia o sin backdrop-filter: sólidos, abajo */
+  --material-barra: color-mix(in oklch, var(--fondo) 72%, transparent);
+  --material-flotante: color-mix(in oklch, var(--flotante) 80%, transparent);
+  --material-lateral: color-mix(in oklch, var(--lateral) 80%, transparent);
+  --material-filtro: blur(20px) saturate(180%);
+
+  --lateral: light-dark(oklch(97.5% 0 0), oklch(19% 0.006 285));
+  --lateral-texto: light-dark(oklch(25% 0 0), oklch(91% 0 0));
+  --lateral-acento: light-dark(oklch(94% 0 0), oklch(27% 0.006 285));
+  --lateral-acento-texto: var(--acento-texto);
+  --lateral-borde: var(--borde);
+  --lateral-ancho: 16rem;
+  --lateral-ancho-icono: 3rem;
+  --barra-alto: 3.5rem;
+
+  /* Escala de 4px para gap, padding y margin. px: no crece con la letra */
+  --esp-1: 4px;
+  --esp-2: 8px;
+  --esp-3: 12px;
+  --esp-4: 16px;
+  --esp-5: 20px;
+  --esp-6: 24px;
+  --esp-8: 32px;
+  --esp-10: 40px;
+
+  /* Alto de botones y campos. lg: táctil y opciones grandes */
+  --alto-xs: 1.75rem;
+  --alto-sm: 2rem;
+  --alto-md: 2.25rem;
+  --alto-lg: 2.5rem;
+  --alto-tactil: 2.75rem; /* 44px, Apple HIG y WCAG 2.5.5 */
+
+  /* Movimiento de Apple: resortes, no curvas fijas. linear() muestrea el resorte
+     --resorte: rebota 3 %, como .snappy de SwiftUI. Botones, menús, switch
+     --resorte-suave: sin rebote, como .smooth. Hojas y paneles grandes
+     Entrar desacelera, salir acelera. Apretar: rápido; soltar: resorte */
+  --dur-minima: 100ms;
+  --dur-corta: 200ms;
+  --dur-media: 350ms;
+  --dur-resorte: 550ms;
+  --curva: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --curva-entrar: cubic-bezier(0.32, 0.72, 0, 1);
+  --curva-salir: cubic-bezier(0.32, 0, 0.67, 0);
+  --resorte: linear(0, 0.069, 0.222, 0.401, 0.573, 0.718, 0.832, 0.914, 0.969, 1.003, 1.021, 1.028, 1.028, 1.025, 1.02, 1.015, 1.01, 1.006, 1.004, 1.002, 1);
+  --resorte-suave: linear(0, 0.06, 0.186, 0.329, 0.466, 0.584, 0.682, 0.76, 0.821, 0.868, 0.903, 0.929, 0.949, 0.963, 0.973, 0.981, 0.986, 0.99, 0.993, 0.995, 1);
+  /* Button press: encoge al apretar y vuelve. Invisible a propósito: menos de 0.95 ya se nota como efecto
+     Apretar 100 ms, soltar 150 ms, frenando al final. Más lento, el botón va detrás del dedo */
+  --apretar: 0.97;
+  --dur-apretar: 100ms;
+  --dur-soltar: 150ms;
+  /* Globo: el primero espera; los vecinos salen al instante mientras sigue "caliente", interfaz.js */
+  --espera-globo: 500ms;
+
+  /* Curvas continuas G2 con corner-shape: squircle en base.css. Sin soporte: circulares
+     Concéntricas: radio de adentro = radio de afuera - relleno */
+  --radio: 0.75rem;
+  --radio-sm: calc(var(--radio) - 4px);
+  --radio-md: calc(var(--radio) - 2px);
+  --radio-lg: var(--radio);
+  --radio-xl: calc(var(--radio) + 4px);
+  --radio-2xl: calc(var(--radio) + 8px);
+  --radio-3xl: calc(var(--radio) + 12px);
+  --radio-4xl: calc(var(--radio) + 16px);
+  --radio-total: 9999px;
+
+  /* Sombras de Apple: anchas y suaves, una cercana y una lejana. Más fuertes en oscuro
+     --brillo: filo de luz arriba de lo flotante, solo en oscuro */
+  --sombra-color: light-dark(oklch(0% 0 0 / 0.1), oklch(0% 0 0 / 0.45));
+  --sombra-cerca: light-dark(oklch(0% 0 0 / 0.04), oklch(0% 0 0 / 0.3));
+  --sombra-lejos: light-dark(oklch(0% 0 0 / 0.08), oklch(0% 0 0 / 0.5));
+  --brillo: inset 0 0.5px 0 light-dark(oklch(100% 0 0 / 0), oklch(100% 0 0 / 0.12));
+  --sombra-xs: 0 0.5px 1px var(--sombra-cerca);
+  --sombra-sm: 0 1px 2px var(--sombra-cerca), 0 2px 8px var(--sombra-cerca);
+  --sombra-md: 0 2px 6px var(--sombra-cerca), 0 8px 24px var(--sombra-lejos), var(--brillo);
+  --sombra-lg: 0 4px 12px var(--sombra-cerca), 0 16px 40px var(--sombra-lejos), var(--brillo);
+  --sombra-xl: 0 8px 20px var(--sombra-cerca), 0 24px 64px var(--sombra-lejos), var(--brillo);
+
+  /* System font stack: cada sistema con su letra, sin descargar nada
+     Apple: SF Pro · Windows: Segoe UI Variable · GNOME: Adwaita Sans (es Inter) · Android y ChromeOS: Roboto
+     Inter (fuentes/) solo donde no hay ninguna: es el respaldo, se descarga solo si hace falta */
+  --fuente: -apple-system, BlinkMacSystemFont, "Segoe UI Variable Text", "Segoe UI", "Adwaita Sans", Roboto, "Inter", system-ui, sans-serif;
+  --fuente-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+
+  /* rem: crece 200 % con zoom. Títulos fluidos con vw */
+  --letra-xs: 0.75rem;
+  --letra-sm: 0.875rem;
+  --letra-base: 1rem;
+  --letra-lg: 1.125rem;
+  --letra-xl: clamp(1.25rem, 1.1rem + 0.75vw, 1.5rem);
+  --letra-2xl: clamp(1.5rem, 1.25rem + 1.25vw, 2rem);
+  --letra-3xl: clamp(2rem, 1.5rem + 2.5vw, 3rem);
+
+  /* Espacio entre letras según el tamaño, como SF: más junto cuanto más grande */
+  --tracking-base: -0.006em;
+  --tracking-lg: -0.014em;
+  --tracking-titulo: -0.021em;
+}
+
+/* Celular: cuerpo de 17px, como iOS */
+@media (width < 37.5rem) {
+  :root { --letra-base: 1.0625rem; }
+}
+
+/* Retina: separador de 0.5px, un pixel físico */
+@media (resolution >= 2x) {
+  :root {
+    --fino: 0.5px;
+    --borde: light-dark(oklch(86% 0 0), oklch(100% 0 0 / 14%));   /* el mismo gris, más oscuro: medio pixel se ve igual que 1px */
+  }
+}
+
+/* Reducir transparencia: materiales sólidos */
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --material-barra: var(--fondo);
+    --material-flotante: var(--flotante);
+    --material-lateral: var(--lateral);
+    --material-filtro: none;
+  }
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :root {
+    --material-barra: var(--fondo);
+    --material-flotante: var(--flotante);
+    --material-lateral: var(--lateral);
+  }
+}
+
+/* Táctil: rail y barra crecen con los botones de 44px */
+@media (pointer: coarse) {
+  :root {
+    --lateral-ancho-icono: 3.75rem;
+    --barra-alto: calc(var(--alto-tactil) + 2 * var(--esp-2) + 1px);
+  }
+}
+
+/* Más contraste: bordes y texto tenue más fuertes */
+@media (prefers-contrast: more) {
+  :root {
+    --borde: light-dark(oklch(60% 0 0), oklch(100% 0 0 / 45%));
+    --entrada: light-dark(oklch(45% 0 0), oklch(100% 0 0 / 60%));
+    --tenue-texto: light-dark(oklch(35% 0 0), oklch(85% 0 0));
+  }
+}
+}

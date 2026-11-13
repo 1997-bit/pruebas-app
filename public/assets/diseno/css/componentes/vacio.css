@@ -1,0 +1,21 @@
+@layer componentes {
+.vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--esp-2);
+  padding: var(--esp-10) var(--esp-4);
+}
+/* Como ContentUnavailableView de Apple: ícono grande y fino, sin caja */
+.vacio-icono {
+  display: grid;
+  place-items: center;
+  margin-bottom: var(--esp-2);
+  color: var(--tenue-texto);
+}
+.vacio-icono .icono { width: 44px; height: 44px; stroke-width: 1.5; }
+/* 403 y 404: el título es el h1 */
+.vacio :is(h1, h2, h3) { font-size: var(--letra-base); font-weight: 600; letter-spacing: var(--tracking-base); margin: 0; }
+.vacio p { margin: 0 0 var(--esp-2); max-width: 36ch; font-size: var(--letra-sm); color: var(--tenue-texto); }
+}

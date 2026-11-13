@@ -1,0 +1,14 @@
+/* Colores de Laravel sobre los tokens de diseño. Sin capa: gana a tokens.css. Solo tokens, nada de clases propias */
+:root {
+  --primario: light-dark(#e3230f, #ff4433);
+  --primario-texto: oklch(100% 0 0);
+  --anillo: light-dark(#f53003, #ff4433);
+  --enlace: light-dark(#d42a0f, #ff6b5c);
+  --interruptor: var(--primario);
+  --serie-1: light-dark(#f53003, #ff4433);
+  --grafico-acento: var(--serie-1);
+  --fondo: light-dark(#fdfdfc, #0a0a0a);
+  --tarjeta: light-dark(#ffffff, #161615);
+  --flotante: light-dark(#ffffff, #1b1b18);
+  --lateral: light-dark(#f8f8f6, #111110);
+}

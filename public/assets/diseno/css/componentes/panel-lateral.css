@@ -1,0 +1,28 @@
+@layer componentes {
+/* Panel lateral: dialog que entra por la derecha, como el inspector de una lista. Celular: hoja de abajo, igual que .dialogo
+   <dialog class="dialogo dialogo-lateral" closedby="any"> */
+@media (width >= 37.5rem) {
+  dialog.dialogo.dialogo-lateral {
+    width: min(26rem, 100% - var(--esp-4));
+    max-width: none;
+    height: calc(100dvh - 2 * var(--esp-2));
+    max-height: none;
+    margin: var(--esp-2) var(--esp-2) var(--esp-2) auto;
+    overflow-y: auto;
+    border-radius: var(--radio-2xl);
+    opacity: 1;
+    scale: none;
+    translate: calc(100% + var(--esp-4)) 0;
+    transition: translate var(--dur-media) var(--curva-salir), overlay var(--dur-media) allow-discrete, display var(--dur-media) allow-discrete;
+  }
+  dialog.dialogo.dialogo-lateral[open] { translate: 0 0; transition: translate var(--dur-resorte) var(--resorte-suave); }
+  @starting-style {
+    dialog.dialogo.dialogo-lateral[open] { translate: calc(100% + var(--esp-4)) 0; }
+  }
+}
+.dialogo-lateral-cabeza { display: flex; align-items: center; justify-content: space-between; gap: var(--esp-2); margin-bottom: var(--esp-4); }
+.dialogo-lateral-cabeza h2 { margin: 0; }
+@media (prefers-reduced-motion: reduce) {
+  dialog.dialogo.dialogo-lateral { transition: none; }
+}
+}
